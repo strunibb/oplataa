@@ -1,0 +1,1142 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Онлайн школа "Струны Будущего"</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #7e22ce;
+            --secondary: #3b82f6;
+            --accent: #ec4899;
+            --dark: #1e293b;
+            --light: #f8fafc;
+            --sky-start: #a0d2eb;
+            --sky-mid: #caf0f8;
+            --sky-end: #e2f0fb;
+        }
+
+        body {
+            font-family: 'Manrope', sans-serif;
+            background: linear-gradient(135deg, #0f172a, #1e293b);
+            color: var(--light);
+            min-height: 100vh;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            overflow-x: hidden;
+        }
+
+        /* Анимация неба */
+        .sky-gradient {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: linear-gradient(135deg, var(--sky-start), var(--sky-mid), var(--sky-end));
+            opacity: 0.05;
+            animation: skyAnimation 15s infinite alternate;
+        }
+
+        @keyframes skyAnimation {
+            0% { background-position: 0% 0%; }
+            100% { background-position: 100% 100%; }
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.2);
+            transition: all 0.4s ease;
+        }
+
+        .glass-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 40px rgba(124, 58, 237, 0.3);
+        }
+
+        .gradient-text {
+            background: linear-gradient(90deg, var(--accent), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            position: relative;
+            display: inline-block;
+        }
+
+        .gradient-text::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, var(--accent), var(--secondary));
+            border-radius: 2px;
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.4s ease;
+        }
+
+        .gradient-text:hover::after {
+            transform: scaleX(1);
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, var(--primary), var(--accent));
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(124, 58, 237, 0.4);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-primary::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.2), transparent);
+            transform: rotate(45deg);
+            transition: all 0.6s ease;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(124, 58, 237, 0.6);
+        }
+
+        .btn-primary:hover::before {
+            transform: rotate(45deg) translate(100%, 100%);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .modal-overlay {
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+        }
+
+        .modal-content {
+            background: linear-gradient(145deg, #1e293b, #0f172a);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            animation: modalEnter 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        @keyframes modalEnter {
+            from { opacity: 0; transform: translateY(20px) scale(0.98); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(236, 72, 153, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(236, 72, 153, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(236, 72, 153, 0); }
+        }
+
+        .subscription-card {
+            transition: all 0.3s ease;
+            transform-origin: center bottom;
+        }
+
+        .subscription-card:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .counter-btn {
+            transition: all 0.2s ease;
+        }
+
+        .counter-btn:hover {
+            transform: scale(1.1);
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.3);
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 4px;
+        }
+
+        .category-header {
+            position: relative;
+            display: inline-block;
+        }
+
+        .category-header::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--accent), var(--secondary));
+            border-radius: 2px;
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.4s ease;
+        }
+
+        .category-header:hover::after {
+            transform: scaleX(1);
+        }
+
+        .benefit-badge {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            background: linear-gradient(45deg, #f59e0b, #ef4444);
+            color: white;
+            font-size: 12px;
+            font-weight: bold;
+            padding: 2px 8px;
+            border-radius: 9999px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+
+        .price-tag {
+            background: rgba(255,255,255,0.1);
+            border-left: 4px solid var(--accent);
+            padding: 8px 12px;
+            border-radius: 0 8px 8px 0;
+            transition: all 0.3s ease;
+        }
+
+        .price-tag:hover {
+            transform: translateX(5px);
+            background: rgba(255,255,255,0.15);
+        }
+
+        .service-icon {
+            font-size: 1.5rem;
+            margin-right: 0.75rem;
+            color: var(--accent);
+            transition: all 0.3s ease;
+        }
+
+        .service-card {
+            transition: all 0.3s ease;
+            border-left: 4px solid transparent;
+            transform-origin: center;
+        }
+
+        .service-card:hover {
+            transform: translateY(-3px) scale(1.03);
+            border-left-color: var(--accent);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .service-card:hover .service-icon {
+            transform: rotate(15deg) scale(1.2);
+        }
+
+        /* Анимация появления элементов */
+        .animate-in {
+            animation: fadeInUp 0.8s ease forwards;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Анимация гитарной струны */
+        .string-animation {
+            position: relative;
+        }
+
+        .string-animation::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent), transparent);
+            transform: scaleX(0);
+            transform-origin: left;
+            animation: stringVibrate 3s infinite;
+        }
+
+        @keyframes stringVibrate {
+            0%, 100% { transform: scaleX(0); opacity: 0; }
+            10% { transform: scaleX(1); opacity: 1; }
+            90% { opacity: 1; }
+        }
+
+        /* Волны */
+        .wave {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 200%;
+            height: 10rem;
+            background: url('data:image/svg+xml;utf8,<svg viewBox="0 0 1200 120" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none"><path d="M0 0v46.29c47.79 22.2 103.59 32.17 158 28 70.36-5.37 136.33-33.31 206.8-37.5 73.84-4.36 147.54 16.88 218.2 35.26 69.27 18 138.3 24.88 209.4 13.08 36.15-6 69.85-17.84 104.45-29.34C989.49 25 1113-14.29 1200 52.47V0z" fill="rgba(124,58,237,0.1)"/></svg>');
+            background-size: 50% 100%;
+            opacity: 0.7;
+            animation: wave 15s cubic-bezier(0.36, 0.45, 0.63, 0.53) infinite;
+            z-index: -1;
+        }
+
+        .wave:nth-child(2) {
+            animation-delay: -5s;
+            opacity: 0.5;
+            bottom: -2rem;
+            height: 12rem;
+        }
+
+        .wave:nth-child(3) {
+            animation-delay: -10s;
+            opacity: 0.3;
+            bottom: -4rem;
+            height: 14rem;
+        }
+
+        @keyframes wave {
+            0% { transform: translateX(0); }
+            50% { transform: translateX(-25%); }
+            100% { transform: translateX(-50%); }
+        }
+
+        /* Облака */
+        .cloud {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            filter: blur(15px);
+            z-index: -1;
+            animation: float 20s infinite linear;
+        }
+
+        @keyframes float {
+            0% { transform: translateX(-100px) translateY(0); }
+            50% { transform: translateX(100px) translateY(-20px); }
+            100% { transform: translateX(300px) translateY(0); }
+        }
+
+        /* Анимация нот */
+        @keyframes floatNote {
+            0% { transform: translateY(0) rotate(0deg); opacity: 0.3; }
+            50% { transform: translateY(-30px) rotate(10deg); opacity: 0.6; }
+            100% { transform: translateY(-60px) rotate(0deg); opacity: 0; }
+        }
+
+        .floating-note {
+            position: absolute;
+            opacity: 0;
+            animation: floatNote 6s infinite linear;
+        }
+
+        /* Анимация звезд */
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.2; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.2); }
+        }
+
+        .star {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle 4s infinite ease-in-out;
+        }
+    </style>
+</head>
+<body class="antialiased">
+    <!-- Анимация неба -->
+    <div class="sky-gradient"></div>
+    
+    <!-- Волны -->
+    <div class="wave"></div>
+    <div class="wave"></div>
+    <div class="wave"></div>
+    
+    <!-- Облака -->
+    <div class="cloud w-64 h-32 top-20 left-10"></div>
+    <div class="cloud w-40 h-20 top-40 right-20" style="animation-delay: -8s;"></div>
+    <div class="cloud w-56 h-28 bottom-40 left-1/4" style="animation-delay: -15s;"></div>
+    
+    <!-- Звезды -->
+    <div class="star w-1 h-1 top-1/4 left-1/5" style="animation-delay: 0s;"></div>
+    <div class="star w-2 h-2 top-1/3 right-1/4" style="animation-delay: 1s;"></div>
+    <div class="star w-1 h-1 bottom-1/4 left-1/3" style="animation-delay: 2s;"></div>
+    <div class="star w-3 h-3 bottom-1/3 right-1/5" style="animation-delay: 3s;"></div>
+    
+    <!-- Парящие ноты -->
+    <div class="floating-note text-3xl text-purple-400 top-1/4 left-1/4" style="animation-delay: 0s;">♪</div>
+    <div class="floating-note text-2xl text-pink-400 top-1/3 right-1/5" style="animation-delay: 1s;">♫</div>
+    <div class="floating-note text-4xl text-blue-400 bottom-1/4 left-1/5" style="animation-delay: 2s;">♩</div>
+    <div class="floating-note text-3xl text-indigo-400 bottom-1/3 right-1/4" style="animation-delay: 3s;">♬</div>
+    <div class="floating-note text-2xl text-yellow-300 top-1/5 right-1/3" style="animation-delay: 4s;">♪</div>
+
+    <div class="container mx-auto px-4 py-8 relative z-10">
+        <!-- Header -->
+        <header class="text-center mb-16 animate__animated animate__fadeIn">
+            <div class="glass-card rounded-2xl p-8 inline-block transform transition-all duration-700 hover:scale-105">
+                <h1 class="text-4xl md:text-5xl font-extrabold mb-4 gradient-text string-animation">
+                    <i class="fas fa-guitar mr-3"></i>Струны Будущего
+                </h1>
+                <p class="text-xl text-gray-300 max-w-2xl mx-auto">
+                    Раскрой свой музыкальный потенциал с лучшими преподавателями онлайн
+                </p>
+                <div class="mt-6 flex justify-center">
+                    <div class="w-24 h-1 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full"></div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Pricing Section -->
+        <section class="mb-20">
+            <!-- Category 1: Основные Абонементы -->
+            <div class="mb-16">
+                <div class="text-center mb-12 animate-in" style="animation-delay: 0.1s">
+                    <h2 class="text-3xl font-bold text-white mb-4 category-header">
+                        <i class="fas fa-star mr-2"></i>Основные Абонементы
+                    </h2>
+                    <p class="text-gray-400 max-w-2xl mx-auto">
+                        Индивидуальные занятия с персональной программой
+                    </p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    
+                    <!-- Личный абонемент (1 месяц) -->
+                    <div class="subscription-card glass-card rounded-xl p-6 relative animate-in" style="animation-delay: 0.2s">
+                        <div class="benefit-badge">Выгода до 15%</div>
+                        <h3 class="text-xl font-bold text-white mb-4 flex items-center">
+                            <i class="fas fa-user mr-2 text-purple-400"></i> Личный абонемент (1 месяц)
+                        </h3>
+                        <p class="text-gray-300 mb-4">Индивидуальное обучение с персональной программой</p>
+                        
+                        <div class="space-y-3 mb-4">
+                            <div class="flex items-start">
+                                <i class="fas fa-check-circle text-purple-400 mt-1 mr-2"></i>
+                                <span class="text-gray-300">4 занятия (50 мин) = <span class="font-bold text-white">3,690₽</span> (922₽/урок)</span>
+                            </div>
+                            <div class="flex items-start">
+                                <i class="fas fa-check-circle text-purple-400 mt-1 mr-2"></i>
+                                <span class="text-gray-300">6 занятий (50 мин) = <span class="font-bold text-white">5,290₽</span> (881₽/урок)</span>
+                            </div>
+                            <div class="flex items-start">
+                                <i class="fas fa-check-circle text-purple-400 mt-1 mr-2"></i>
+                                <span class="text-gray-300">8 занятий (50 мин) = <span class="font-bold text-white">6,890₽</span> (861₽/урок)</span>
+                            </div>
+                        </div>
+                        
+                        <div class="glass-card p-3 rounded-lg mb-4">
+                            <p class="text-sm text-gray-300">
+                                <i class="fas fa-snowflake text-blue-300 mr-1"></i> Опция заморозки: 290₽ на 14 дней (1 раз в месяц)
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Личный абонемент (2 месяца) -->
+                    <div class="subscription-card glass-card rounded-xl p-6 relative animate-in" style="animation-delay: 0.3s">
+                        <div class="benefit-badge">Выгода до 20%</div>
+                        <h3 class="text-xl font-bold text-white mb-4 flex items-center">
+                            <i class="fas fa-user-clock mr-2 text-blue-400"></i> Личный абонемент (2 месяца)
+                        </h3>
+                        <p class="text-gray-300 mb-4">Оптимальный вариант для стабильного прогресса</p>
+                        
+                        <div class="space-y-3 mb-4">
+                            <div class="flex items-start">
+                                <i class="fas fa-check-circle text-blue-400 mt-1 mr-2"></i>
+                                <span class="text-gray-300">8 занятий (50 мин) = <span class="font-bold text-white">7,190₽</span> (898₽/урок)</span>
+                            </div>
+                            <div class="flex items-start">
+                                <i class="fas fa-check-circle text-blue-400 mt-1 mr-2"></i>
+                                <span class="text-gray-300">12 занятий (50 мин) = <span class="font-bold text-white">10,490₽</span> (874₽/урок)</span>
+                            </div>
+                            <div class="flex items-start">
+                                <i class="fas fa-check-circle text-blue-400 mt-1 mr-2"></i>
+                                <span class="text-gray-300">16 занятий (50 мин) = <span class="font-bold text-white">13,590₽</span> (849₽/урок)</span>
+                            </div>
+                        </div>
+                        
+                        <div class="glass-card p-3 rounded-lg mb-4">
+                            <p class="text-sm text-gray-300">
+                                <i class="fas fa-snowflake text-blue-300 mr-1"></i> Опция заморозки: 290₽ на 14 дней (1 раз в месяц)
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Утро с гитарой -->
+                    <div class="subscription-card glass-card rounded-xl p-6 relative animate-in" style="animation-delay: 0.4s">
+                        <div class="benefit-badge">Спеццена</div>
+                        <h3 class="text-xl font-bold text-white mb-4 flex items-center">
+                            <i class="fas fa-sun mr-2 text-yellow-400"></i> Утро с гитарой ☀️
+                        </h3>
+                        <p class="text-gray-300 mb-4">Ранние пташки (занятия с 6:00 до 8:00 по мск)</p>
+                        
+                        <div class="space-y-3 mb-4">
+                            <div class="flex items-start">
+                                <i class="fas fa-check-circle text-yellow-400 mt-1 mr-2"></i>
+                                <span class="text-gray-300">4 занятия (50 мин) = <span class="font-bold text-white">3,390₽</span> (848₽/урок)</span>
+                            </div>
+                            <div class="flex items-start">
+                                <i class="fas fa-check-circle text-yellow-400 mt-1 mr-2"></i>
+                                <span class="text-gray-300">6 занятий (50 мин) = <span class="font-bold text-white">4,890₽</span> (815₽/урок)</span>
+                            </div>
+                            <div class="flex items-start">
+                                <i class="fas fa-check-circle text-yellow-400 mt-1 mr-2"></i>
+                                <span class="text-gray-300">8 занятий (50 мин) = <span class="font-bold text-white"> 6,390₽₽</span> (798₽/урок)</span>
+                            </div>
+                        </div>
+                        
+                        
+                        <div class="glass-card p-3 rounded-lg mb-4">
+                            <p class="text-sm text-gray-300">
+                                <i class="fas fa-snowflake text-blue-300 mr-1"></i> Опция заморозки: 290₽ на 14 дней (1 раз в месяц)
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Семейный абонемент -->
+                    <div class="subscription-card glass-card rounded-xl p-6 relative animate-in" style="animation-delay: 0.5s">
+                        <div class="benefit-badge">Выгода 20%</div>
+                        <h3 class="text-xl font-bold text-white mb-4 flex items-center">
+                            <i class="fas fa-home mr-2 text-green-400"></i> Семейный абонемент 🧑👧
+                        </h3>
+                        <p class="text-gray-300 mb-4">Родственники или друзья → можно делить между 2 учениками</p>
+                        
+                        <div class="space-y-3 mb-4">
+                            <div class="flex items-start">
+                                <i class="fas fa-check-circle text-yellow-400 mt-1 mr-2"></i>
+                                <span class="text-gray-300">4 занятия (50 мин) = <span class="font-bold text-white">3,490₽</span> (872₽/урок)</span>
+                            </div>
+                            <div class="flex items-start">
+                                <i class="fas fa-check-circle text-yellow-400 mt-1 mr-2"></i>
+                                <span class="text-gray-300">6 занятий (50 мин) = <span class="font-bold text-white">5,190₽</span> (865₽/урок)</span>
+                            </div>
+                            <div class="flex items-start">
+                                <i class="fas fa-check-circle text-yellow-400 mt-1 mr-2"></i>
+                                <span class="text-gray-300">8 занятий (50 мин) = <span class="font-bold text-white">6,790₽</span> (848₽/урок)</span>
+                            </div>
+                        </div>
+                        <div class="glass-card p-3 rounded-lg mb-4">
+                            <p class="text-sm text-gray-300">
+                                <i class="fas fa-snowflake text-blue-300 mr-1"></i> Опция заморозки: 290₽ на 14 дней (1 раз в месяц)
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Абонемент на двойные занятия -->
+                    <div class="subscription-card glass-card rounded-xl p-6 relative animate-in" style="animation-delay: 0.6s">
+                        <div class="benefit-badge">Бонус</div>
+                        <h3 class="text-xl font-bold text-white mb-4 flex items-center">
+                            <i class="fas fa-guitar mr-2 text-pink-400"></i> Двойные занятия (1.30ч) 🎸×2
+                        </h3>
+                        <p class="text-gray-300 mb-4">Углубленный разбор, быстрый результат</p>
+                        
+                        <div class="space-y-3 mb-4">
+                            <div class="flex items-start">
+                                <i class="fas fa-check-circle text-yellow-400 mt-1 mr-2"></i>
+                                <span class="text-gray-300">4 занятия = <span class="font-bold text-white">6,790₽</span> (1,697₽/урок)</span>
+                            </div>
+                            <div class="flex items-start">
+                                <i class="fas fa-check-circle text-yellow-400 mt-1 mr-2"></i>
+                                <span class="text-gray-300">6 занятий = <span class="font-bold text-white">10,090₽</span> (1,681₽/урок)</span>
+                            </div>
+                            <div class="flex items-start">
+                                <i class="fas fa-check-circle text-yellow-400 mt-1 mr-2"></i>
+                                <span class="text-gray-300">8 занятий = <span class="font-bold text-white"> 13,290₽</span> (1,661₽/урок)</span>
+                            </div>
+                        </div>
+                        
+                        <div class="glass-card p-3 rounded-lg mb-4">
+                            <p class="text-sm text-gray-300">
+                                <i class="fas fa-s snowflake text-blue-300 mr-1"></i> Опция заморозки: 290₽ на 14 дней (1 раз в месяц)
+                            </p>
+                    </div>
+                </div>
+            </div>
+            </div>
+            </div>
+            
+        <section class="mb-20">
+
+            <!-- Category 2: Комбинированные и Специальные Абонементы -->
+            <div class="mb-16">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl font-bold text-white mb-4 category-header animate-in" style="animation-delay: 0.1s">
+                        <i class="fas fa-users mr-2"></i>Комбинированные и Специальные Абонементы
+                    </h2>
+                    <p class="text-gray-400 max-w-2xl mx-auto animate-in" style="animation-delay: 0.2s">
+                        Гибкие варианты для разных потребностей и целей
+                    </p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- Комбо абонемент -->
+                    <div class="subscription-card glass-card rounded-xl p-6 relative animate-in" style="animation-delay: 0.3s">
+                        <div class="benefit-badge">Гибкость</div>
+                        <h3 class="text-xl font-bold text-white mb-4 flex items-center">
+                            <i class="fas fa-random mr-2 text-indigo-400"></i> Комбо абонемент 🎸🎤
+                        </h3>
+                        <p class="text-gray-300 mb-4">Сочетание уроков по гитаре ИЛИ вокалу, занятия с разными преподавателями</p>
+                        
+                        <button onclick="handleSubscriptionSelect('combo')"
+                                class="w-full btn-primary py-3 rounded-lg font-semibold mt-4 flex items-center justify-center">
+                            <i class="fas fa-calculator mr-2"></i> Рассчитать свой вариант
+                        </button>
+                    </div>
+
+                    <!-- Парный абонемент -->
+                    <div class="subscription-card glass-card rounded-xl p-6 relative animate-in" style="animation-delay: 0.4s">
+                        <div class="benefit-badge">Совместно</div>
+                        <h3 class="text-xl font-bold text-white mb-4 flex items-center">
+                            <i class="fas fa-user-friends mr-2 text-teal-400"></i> Парный абонемент 👫
+                        </h3>
+                        <p class="text-gray-300 mb-4">Совместное обучение с напарником</p>
+                        
+                        <div class="space-y-3 mb-4">
+                            <div class="flex items-start">
+                                <i class="fas fa-check-circle text-teal-400 mt-1 mr-2"></i>
+                                <span class="text-gray-300">3 парных занятия (50 мин) + 1 личное занятие (50 мин)</span>
+                            </div>
+                            <div class="flex items-start">
+                                <i class="fas fa-percentage text-teal-400 mt-1 mr-2"></i>
+                                <span class="text-gray-300">Цена: <span class="font-bold text-white">2,490₽</span> 
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Самостоятельный на 6 месяцев -->
+                    <div class="subscription-card glass-card rounded-xl p-6 relative animate-in" style="animation-delay: 0.5s">
+                        <div class="benefit-badge">Гибкость</div>
+                        <h3 class="text-xl font-bold text-white mb-4 flex items-center">
+                            <i class="fas fa-laptop mr-2 text-orange-400"></i> Самостоятельный 🎥
+                        </h3>
+                        <p class="text-gray-300 mb-4">Учитесь по видео, с постоянной обратной связью</p>
+                        
+                        <div class="space-y-3 mb-4">
+                            <div class="flex items-start">
+                                <i class="fas fa-check-circle text-orange-400 mt-1 mr-2"></i>
+                                <span class="text-gray-300">Видеокурс «Освой гитару» (аккорды, бой, переборы)</span>
+                            </div>
+                            <div class="flex items-start">
+                                <i class="fas fa-check-circle text-orange-400 mt-1 mr-2"></i>
+                                <span class="text-gray-300">4 урока (по 20 мин) для разбора ошибок</span>
+                            </div>
+                            <div class="flex items-start">
+                                <i class="fas fa-percentage text-orange-400 mt-1 mr-2"></i>
+                                <span class="text-gray-300">Цена: <span class="font-bold text-white">3,490₽</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Все включено -->
+                    <div class="subscription-card glass-card rounded-xl p-6 relative animate-in" style="animation-delay: 0.6s">
+                        <div class="benefit-badge">Максимум</div>
+                        <h3 class="text-xl font-bold text-white mb-4 flex items-center">
+                            <i class="fas fa-crown mr-2 text-yellow-400"></i> "Всё включено"
+                        </h3>
+                        <p class="text-gray-300 mb-4">Максимальный результат и поддержка</p>
+                        
+                        <div class="space-y-3 mb-4">
+                            <div class="flex items-start">
+                                <i class="fas fa-check-circle text-yellow-400 mt-1 mr-2"></i>
+                                <span class="text-gray-300">1 Личное занятие (50 мин) в подарок!</span>
+                            </div>
+                            <div class="flex items-start">
+                                <i class="fas fa-check-circle text-yellow-400 mt-1 mr-2"></i>
+                                <span class="text-gray-300">Видеокурс </span>
+                            </div>
+                            <div class="flex items-start">
+                                <i class="fas fa-check-circle text-yellow-400 mt-1 mr-2"></i>
+                                <span class="text-gray-300">Доступ к 100 песням из сборника</span>
+                            </div>
+                            <div class="flex items-start">
+                                <i class="fas fa-check-circle text-yellow-400 mt-1 mr-2"></i>
+                                <span class="text-gray-300">8 Консультаций (20 мин)</span>
+                            </div>
+                            <div class="flex items-start">
+                                <i class="fas fa-percentage text-yellow-400 mt-1 mr-2"></i>
+                                <span class="text-gray-300">Цена: <span class="font-bold text-white">6,990₽</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Category 3: Дополнительные услуги -->
+            <div class="mb-16">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl font-bold text-white mb-4 category-header animate-in" style="animation-delay: 0.1s">
+                        <i class="fas fa-plus-circle mr-2"></i>Дополнительные услуги
+                    </h2>
+                    <p class="text-gray-400 max-w-2xl mx-auto animate-in" style="animation-delay: 0.2s">
+                        Разовые услуги и специальные опции для вашего удобства
+                    </p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- Отработка материала -->
+                    <div class="service-card glass-card rounded-xl p-6 animate-in" style="animation-delay: 0.3s">
+                        <h3 class="text-xl font-bold text-white mb-4 flex items-center">
+                            <i class="fas fa-redo service-icon"></i> Отработка материала
+                        </h3>
+                        <p class="text-gray-300 mb-4">Дополнительное занятие для закрепления изученного (20 минут)</p>
+                        <div class="price-tag">
+                            <span class="text-white font-bold">349₽</span>
+                            <span class="text-gray-400 text-sm ml-2">за 20 минут</span>
+                        </div>
+                    </div>
+
+                    <!-- Запись урока -->
+                    <div class="service-card glass-card rounded-xl p-6 animate-in" style="animation-delay: 0.4s">
+                        <h3 class="text-xl font-bold text-white mb-4 flex items-center">
+                            <i class="fas fa-video service-icon"></i> Запись урока
+                        </h3>
+                        <p class="text-gray-300 mb-4">Видеозапись занятия для самостоятельного повторения</p>
+                        <div class="price-tag">
+                            <span class="text-white font-bold">49₽</span>
+                            <span class="text-gray-400 text-sm ml-2">за урок</span>
+                        </div>
+                    </div>
+
+                    <!-- Разбор песни -->
+                    <div class="service-card glass-card rounded-xl p-6 animate-in" style="animation-delay: 0.5s">
+                        <h3 class="text-xl font-bold text-white mb-4 flex items-center">
+                            <i class="fas fa-music service-icon"></i> Разбор песни
+                        </h3>
+                        <p class="text-gray-300 mb-4">Подробный разбор интересующей вас композиции с обратной связью и PDF-файлом</p>
+                        <div class="price-tag">
+                            <span class="text-white font-bold">450₽</span>
+                            <span class="text-gray-400 text-sm ml-2">за песню</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Footer -->
+    <footer class="py-8 text-center text-gray-400 relative">
+        <div class="container mx-auto px-4">
+            <div class="mb-4">
+                <div class="text-3xl mb-4">
+                    <i class="fas fa-guitar text-purple-500 mr-3"></i>
+                    <i class="fas fa-microphone text-pink-500 mr-3"></i>
+                    <i class="fas fa-music text-blue-400"></i>
+                </div>
+                <h3 class="text-2xl font-bold text-white mb-2">Струны Будущего</h3>
+                <p class="max-w-xl mx-auto">Ваш путь к музыкальному мастерству начинается здесь</p>
+            </div>
+            <div class="flex justify-center space-x-6 mb-6">
+                <a href="#" class="text-2xl text-gray-400 hover:text-white transition-colors duration-300">
+                    <i class="fab fa-vk"></i>
+                </a>
+                <a href="#" class="text-2xl text-gray-400 hover:text-white transition-colors duration-300">
+                    <i class="fab fa-telegram"></i>
+                </a>
+                <a href="#" class="text-2xl text-gray-400 hover:text-white transition-colors duration-300">
+                    <i class="fab fa-youtube"></i>
+                </a>
+                <a href="#" class="text-2xl text-gray-400 hover:text-white transition-colors duration-300">
+                    <i class="fab fa-instagram"></i>
+                </a>
+            </div>
+            <p class="text-sm">© 2025 Онлайн школа "Струны Будущего". Все права защищены</p>
+        </div>
+    </footer>
+
+    <!-- Modal -->
+    <div class="modal-overlay fixed inset-0 z-50 hidden items-center justify-center p-4" id="modal">
+        <div class="modal-content rounded-2xl max-w-md w-full relative overflow-hidden">
+            <button class="absolute top-4 right-4 text-gray-400 hover:text-white text-2xl z-10" onclick="closeModal()">
+                <i class="fas fa-times"></i>
+            </button>
+            
+            <div class="absolute inset-0 bg-gradient-to-br from-purple-900 to-blue-900 opacity-80"></div>
+            
+            <div class="relative z-10 p-6" id="modalContent">
+                <!-- Content will be inserted here by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const BOT_TOKEN = '7598736914:AAHVJUOt7okTfMh1VE_l1ZrCqaXv-r1PcWI';
+        const ADMIN_CHAT_ID = '725158536';
+        
+        const prices = {
+            personal1: {4: 3690, 6: 5290, 8: 6890},
+            personal3: {8: 7190, 12: 10490, 16: 13590},
+            pair: 2490,
+            combo: {
+                nikita: { price: 890, name: "Никита (Гитара, Электрогитара, Укулеле)" },
+                maria: { price: 650, name: "Мария (Гитара или Английский язык)" },
+                ksenia: { price: 790, name: "Ксения (Вокал)" }
+            },
+            video_course: 3990,
+            trial: 0
+        };
+
+        let currentSelection = {
+            type: null,
+            details: {},
+            price: 0
+        };
+
+        // Анимация появления элементов при скролле
+        document.addEventListener('DOMContentLoaded', function() {
+            const animateElements = document.querySelectorAll('.animate-in');
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.animationPlayState = 'running';
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.1 });
+            
+            animateElements.forEach(el => {
+                observer.observe(el);
+            });
+        });
+
+        function handleSubscriptionSelect(type) {
+            currentSelection.type = type;
+            
+            if (['pair', 'video_course', 'trial'].includes(type)) {
+                currentSelection.price = prices[type];
+                showPaymentScreen();
+                return;
+            }
+
+            if (type === 'combo') {
+                showComboSelection();
+                return;
+            }
+
+            if (type.includes('personal')) {
+                showPersonalOptions(type);
+            }
+        }
+
+        function showComboSelection() {
+            const modalContent = document.getElementById('modalContent');
+            modalContent.innerHTML = `
+                <div class="text-center mb-6">
+                    <h3 class="text-2xl font-bold text-white mb-2">
+                        <i class="fas fa-users mr-2"></i>Комбо абонемент
+                    </h3>
+                    <p class="text-gray-300">Выберите количество занятий с каждым преподавателем</p>
+                </div>
+                
+                <div class="space-y-4 mb-6">
+                    ${Object.entries(prices.combo).map(([teacherKey, teacherData]) => `
+                        <div class="glass-card p-4 rounded-lg transform transition-all duration-300 hover:scale-[1.02]">
+                            <div class="flex items-center justify-between mb-2">
+                                <div>
+                                    <h4 class="font-medium text-white">${teacherData.name}</h4>
+                                    <p class="text-sm text-gray-300">${teacherData.price}₽/урок</p>
+                                </div>
+                                <div class="flex items-center space-x-3">
+                                    <button class="counter-btn bg-purple-600 w-8 h-8 rounded-full text-white flex items-center justify-center hover:bg-purple-700"
+                                             onclick="updateCounter('${teacherKey}', -1)">
+                                        <i class="fas fa-minus text-xs"></i>
+                                    </button>
+                                    <span id="${teacherKey}Counter" class="text-white font-medium w-6 text-center">0</span>
+                                    <button class="counter-btn bg-purple-600 w-8 h-8 rounded-full text-white flex items-center justify-center hover:bg-purple-700"
+                                             onclick="updateCounter('${teacherKey}', 1)">
+                                        <i class="fas fa-plus text-xs"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="flex items-center text-sm text-gray-400">
+                                <i class="fas fa-info-circle mr-2"></i>
+                                <span>Выбрано: <span id="${teacherKey}Total">0₽</span></span>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+                
+                <div class="glass-card p-4 rounded-lg mb-6 transform transition-all duration-300 hover:scale-[1.01]">
+                    <div class="flex justify-between items-center">
+                        <span class="text-gray-300">Итого:</span>
+                        <span id="totalPrice" class="text-xl font-bold text-white">0₽</span>
+                    </div>
+                </div>
+                
+                <button onclick="calculateTotalPrice()"
+                        class="w-full btn-primary py-3 rounded-lg font-semibold flex items-center justify-center">
+                    Продолжить <i class="fas fa-arrow-right ml-2"></i>
+                </button>
+            `;
+            showModal();
+        }
+
+        function updateCounter(teacher, delta) {
+            const counter = document.getElementById(`${teacher}Counter`);
+            const currentValue = parseInt(counter.textContent) + delta;
+            if (currentValue < 0) return;
+            
+            counter.textContent = currentValue;
+            currentSelection.details[teacher] = currentValue;
+            
+            // Обновляем сумму для конкретного преподавателя
+            const teacherTotal = currentValue * prices.combo[teacher].price;
+            document.getElementById(`${teacher}Total`).textContent = teacherTotal + '₽';
+            
+            // Пересчитываем общую сумму
+            calculateTotalPrice(true);
+        }
+
+        function calculateTotalPrice(dontContinue = false) {
+            let total = 0;
+            let teacherDetails = [];
+            
+            // Рассчитываем общую сумму и собираем детали
+            for (const [teacherKey, count] of Object.entries(currentSelection.details)) {
+                if (count > 0) {
+                    const teacherData = prices.combo[teacherKey];
+                    total += count * teacherData.price;
+                    teacherDetails.push({
+                        name: teacherData.name,
+                        count: count,
+                        price: teacherData.price,
+                        total: count * teacherData.price
+                    });
+                }
+            }
+            
+            document.getElementById('totalPrice').textContent = total + '₽';
+            
+            if (total === 0 && !dontContinue) {
+                alert('Пожалуйста, выберите хотя бы одно занятие!');
+                return;
+            }
+
+            currentSelection.price = total;
+            currentSelection.teacherDetails = teacherDetails;
+            
+            if (!dontContinue) {
+                showPaymentScreen();
+            }
+        }
+
+        function showPersonalOptions(type) {
+            const months = type.includes('1') ? '1 месяц' : '2 месяца';
+            const modalContent = document.getElementById('modalContent');
+            modalContent.innerHTML = `
+                <div class="text-center mb-6">
+                    <h3 class="text-2xl font-bold text-white mb-2">
+                        <i class="fas fa-user mr-2"></i>Личный абонемент
+                    </h3>
+                    <p class="text-gray-300">${months} • Выберите количество занятий</p>
+                </div>
+                
+                <select id="lessonCount" class="w-full glass-card border border-gray-700 text-white p-3 rounded-lg mb-6 focus:ring-2 focus:ring-purple-500 transform transition-all duration-300 hover:scale-[1.01]">
+                    ${Object.keys(prices[type]).map(count => `
+                        <option value="${count}" class="bg-gray-800">${count} занятий - ${prices[type][count]}₽</option>
+                    `).join('')}
+                </select>
+                
+                <button onclick="handlePersonalSelection()"
+                        class="w-full btn-primary py-3 rounded-lg font-semibold flex items-center justify-center">
+                    Продолжить <i class="fas fa-arrow-right ml-2"></i>
+                </button>
+            `;
+            showModal();
+        }
+
+        function handlePersonalSelection() {
+            const lessonCount = document.getElementById('lessonCount').value;
+            currentSelection.price = prices[currentSelection.type][lessonCount];
+            showPaymentScreen();
+        }
+
+        function showPaymentScreen() {
+            const modalContent = document.getElementById('modalContent');
+            
+            let detailsHtml = '';
+            if (currentSelection.teacherDetails) {
+                detailsHtml = currentSelection.teacherDetails.map(detail => `
+                    <div class="glass-card p-3 rounded-lg mb-2 transform transition-all duration-300 hover:scale-[1.01]">
+                        <div class="flex justify-between">
+                            <span class="text-gray-300">${detail.name}</span>
+                            <span>${detail.count} × ${detail.price}₽ = ${detail.total}₽</span>
+                        </div>
+                    </div>
+                `).join('');
+            }
+            
+            modalContent.innerHTML = `
+                <div class="text-center mb-6">
+                    <h3 class="text-2xl font-bold text-white mb-2">
+                        <i class="fas fa-edit mr-2"></i>${currentSelection.type === 'combo' ? 'Оформление комбо абонемента' : 'Оформление заявки'}
+                    </h3>
+                    <p class="text-gray-300">${currentSelection.type === 'combo' ? 'Подтвердите ваш выбор' : 'Мы свяжемся с вами для подтверждения'}</p>
+                </div>
+                
+                ${detailsHtml}
+                
+                <div class="glass-card p-4 rounded-lg my-4 transform transition-all duration-300 hover:scale-[1.01]">
+                    <div class="flex justify-between items-center">
+                        <span class="text-gray-300 font-bold">Сумма к оплате:</span>
+                        <span class="text-xl font-bold text-white">${currentSelection.price}₽</span>
+                    </div>
+                </div>
+                
+                <div class="mb-6">
+                    <label class="block text-gray-300 mb-2">Ваш телефон или Telegram</label>
+                    <input type="text" id="contactInput" placeholder="+7 999 123-45-67 или @username"
+                            class="w-full glass-card border border-gray-700 text-white p-3 rounded-lg focus:ring-2 focus:ring-purple-500 transform transition-all duration-300 hover:scale-[1.01]"
+                           autocapitalize="none" autocorrect="off" autocomplete="tel">
+                </div>
+                
+                <button onclick="submitApplication()"
+                        class="w-full btn-primary py-3 rounded-lg font-semibold flex items-center justify-center mb-2">
+                    Отправить заявку <i class="fas fa-paper-plane ml-2"></i>
+                </button>
+                
+                ${currentSelection.type === 'combo' ? `
+                <button onclick="showComboSelection()"
+                        class="w-full bg-gray-700 hover:bg-gray-600 py-3 rounded-lg font-semibold flex items-center justify-center">
+                    Назад <i class="fas fa-arrow-left ml-2"></i>
+                </button>
+                ` : ''}
+            `;
+            
+            // Auto-focus input
+            setTimeout(() => {
+                document.getElementById('contactInput').focus();
+            }, 300);
+        }
+
+        async function submitApplication() {
+            const contact = document.getElementById('contactInput').value.trim();
+            if (!contact) {
+                alert('Пожалуйста, введите контактные данные!');
+                return;
+            }
+
+            try {
+                let message = `🎸 <b>Новая заявка!</b>\n\n`;
+                message += `📌 <b>Тип:</b> ${getSubscriptionName(currentSelection.type)}\n`;
+                message += `📞 <b>Контакт:</b> ${contact}\n`;
+                message += `💰 <b>Сумма:</b> ${currentSelection.price}₽\n`;
+
+                if (currentSelection.type === 'combo') {
+                    message += `\n👨🏫 <b>Распределение занятий:</b>\n`;
+                    message += Object.entries(currentSelection.details)
+                        .filter(([_, count]) => count > 0)
+                        .map(([teacher, count]) => `• ${teacher.charAt(0).toUpperCase() + teacher.slice(1)}: ${count} занятий`)
+                        .join('\n');
+                }
+
+                if (currentSelection.type.includes('personal')) {
+                    const element = document.getElementById('lessonCount');
+                    if (element) {
+                        const lessons = element.value;
+                        message += `\n🎯 <b>Количество занятий:</b> ${lessons}`;
+                    }
+                }
+
+                await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        chat_id: ADMIN_CHAT_ID,
+                        text: message,
+                        parse_mode: 'HTML'
+                    })
+                });
+
+                document.getElementById('modalContent').innerHTML = `
+                    <div class="text-center py-6">
+                        <div class="text-5xl text-green-400 mb-4 animate__animated animate__tada">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold text-white mb-4">✅ Заявка отправлена!</h3>
+                        <p class="text-gray-300 mb-6">Мы свяжемся с вами в ближайшее время для подтверждения.</p>
+                        <button onclick="closeModal()" class="w-full btn-secondary py-3 rounded-lg font-semibold">
+                            Закрыть <i class="fas fa-times ml-2"></i>
+                        </button>
+                    </div>
+                `;
+
+            } catch (error) {
+                console.error('Ошибка отправки:', error);
+                alert('⚠️ Произошла ошибка при отправке. Пожалуйста, свяжитесь с нами напрямую.');
+            }
+        }
+
+        function getSubscriptionName(type) {
+            const names = {
+                trial: 'Бесплатное пробное занятие',
+                personal1: 'Личный абонемент (1 месяц)',
+                personal3: 'Личный абонемент (2 месяца)',
+                pair: 'Парный абонемент',
+                combo: 'Комбо абонемент',
+                video_course: 'Видеокурс "Освой гитару с нуля"'
+            };
+            return names[type] || type;
+        }
+
+        function showModal() {
+            document.getElementById('modal').style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal() {
+            document.getElementById('modal').style.display = 'none';
+            document.body.style.overflow = 'auto';
+            currentSelection = { type: null, details: {}, price: 0 };
+        }
+
+        // Close modal when clicking outside content
+        document.getElementById('modal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+    </script>
+</body>
+</html>
