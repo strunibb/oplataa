@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Подтверждение оплаты</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #6a11cb, #2575fc);
+            color: white;
+            margin: 0;
+            padding: 15px;
+            text-align: center;
+            min-height: 100vh;
+        }
+
+        h2 {
+            margin: 15px 0;
+            font-size: 22px;
+            font-weight: bold;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.12);
+            border-radius: 16px;
+            padding: 15px;
+            text-align: left;
+            backdrop-filter: blur(8px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+            transition: transform 0.2s ease;
+        }
+
+        .card:hover {
+            transform: scale(1.02);
+        }
+
+        .card h3 {
+            margin: 0 0 10px;
+            font-size: 18px;
+            color: #fff;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            padding-bottom: 5px;
+        }
+
+        .card p {
+            font-size: 14px;
+            margin: 5px 0;
+            color: #eee;
+        }
+
+        .button {
+            display: block;
+            margin-top: 10px;
+            padding: 12px;
+            width: 100%;
+            background: linear-gradient(135deg, #9b4dff, #6a11cb);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .button:hover {
+            background: linear-gradient(135deg, #b16eff, #7d2fff);
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .back-btn {
+            margin-top: 20px;
+            padding: 12px 20px;
+            background: rgba(255, 255, 255, 0.15);
+            border: none;
+            color: white;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.2s ease;
+        }
+
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+    </style>
+</head>
+<body>
+    <h2>🎸 Подтверждение оплаты</h2>
+    <div id="categories" class="grid"></div>
+    <div id="subscriptions" class="hidden"></div>
+    <button id="backBtn" class="back-btn hidden" onclick="showCategories()">🔙 Назад</button>
+
+    <script>
+        const ADMIN_BOT_TOKEN = '7598736914:AAHVJUOt7okTfMh1VE_l1ZrCqaXv-r1PcWI';
+        const ADMIN_ID = '725158536';
+
+        const tg = window.Telegram.WebApp;
+        const user = tg.initDataUnsafe?.user;
+
+        const data = {
+            "🎸 Гитара / Электрогитара": [
+                { title: "Личный абонемент (1 мес)", options: ["4 занятия – 3,690₽", "6 занятий – 5,290₽", "8 занятий – 6,890₽"] },
+                { title: "Личный абонемент (2 мес)", options: ["8 занятий – 7,190₽", "12 занятий – 10,490₽", "16 занятий – 13,590₽"] },
+                { title: "Утро с гитарой", options: ["4 занятия – 3,390₽", "6 занятий – 4,890₽", "8 занятий – 6,390₽"] },
+                { title: "Научись подбирать на слух", options: ["4 занятия – 3,690₽", "6 занятий – 5,290₽", "8 занятий – 6,890₽"] },
+                { title: "Семейный абонемент", options: ["4 занятия – 3,490₽", "6 занятий – 5,190₽", "8 занятий – 6,790₽"] },
+                { title: "Двойные занятия", options: ["4 занятия – 6,790₽", "6 занятий – 10,090₽", "8 занятий – 13,290₽"] }
+            ],
+            "🎹 Фортепиано / Пианино": [
+                { title: "Личный абонемент (1 мес)", options: ["4 занятия – 2,990₽", "6 занятий – 4,290₽", "8 занятий – 5,590₽"] },
+                { title: "Личный абонемент (2 мес)", options: ["8 занятий – 5,790₽", "12 занятий – 8,490₽", "16 занятий – 10,990₽"] },
+                { title: "Утро с пианино", options: ["4 занятия – 2,790₽", "6 занятий – 3,990₽", "8 занятий – 5,190₽"] },
+                { title: "Научись подбирать на слух", options: ["4 занятия – 2,990₽", "6 занятий – 4,290₽", "8 занятий – 5,590₽"] },
+                { title: "Семейный абонемент", options: ["4 занятия – 2,790₽", "6 занятий – 4,190₽", "8 занятий – 5,490₽"] },
+                { title: "Двойные занятия", options: ["4 занятия – 5,490₽", "6 занятий – 8,190₽", "8 занятий – 10,790₽"] }
+            ],
+            "🎵 Укулеле": [
+                { title: "1 мес", options: ["4 занятия – 3,390₽", "6 занятий – 4,890₽", "8 занятий – 6,390₽"] },
+                { title: "2 мес", options: ["8 занятий – 6,490₽", "12 занятий – 9,590₽", "16 занятий – 12,490₽"] }
+            ],
+            "➕ Дополнительные услуги": [
+                { title: "Отработка материала", options: ["349₽"] },
+                { title: "Запись урока", options: ["49₽"] },
+                { title: "Разбор песни", options: ["450₽"] }
+            ]
+        };
+
+        const categoriesDiv = document.getElementById('categories');
+        const subsDiv = document.getElementById('subscriptions');
+        const backBtn = document.getElementById('backBtn');
+
+        function showCategories() {
+            subsDiv.classList.add('hidden');
+            backBtn.classList.add('hidden');
+            categoriesDiv.classList.remove('hidden');
+            categoriesDiv.innerHTML = '';
+            Object.keys(data).forEach(cat => {
+                const btn = document.createElement('button');
+                btn.className = 'button';
+                btn.innerText = cat;
+                btn.onclick = () => showSubscriptions(cat);
+                categoriesDiv.appendChild(btn);
+            });
+        }
+
+        function showSubscriptions(category) {
+            categoriesDiv.classList.add('hidden');
+            subsDiv.innerHTML = '';
+            subsDiv.classList.remove('hidden');
+            backBtn.classList.remove('hidden');
+
+            const grid = document.createElement('div');
+            grid.className = 'grid';
+
+            data[category].forEach(sub => {
+                const card = document.createElement('div');
+                card.className = 'card';
+                const title = document.createElement('h3');
+                title.innerText = sub.title;
+                card.appendChild(title);
+
+                sub.options.forEach(opt => {
+                    const p = document.createElement('p');
+                    p.innerText = opt;
+                    card.appendChild(p);
+                    const btn = document.createElement('button');
+                    btn.className = 'button';
+                    btn.innerText = `✅ Выбрать: ${opt}`;
+                    btn.onclick = () => confirmPayment(`${sub.title} — ${opt}`);
+                    card.appendChild(btn);
+                });
+
+                grid.appendChild(card);
+            });
+
+            subsDiv.appendChild(grid);
+        }
+
+        async function confirmPayment(subscription) {
+            if (!user?.username) {
+                tg.showAlert('❌ Войдите в Telegram!');
+                return;
+            }
+
+            try {
+                await fetch(`https://api.telegram.org/bot${ADMIN_BOT_TOKEN}/sendMessage`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        chat_id: ADMIN_ID,
+                        text: `💳 Пользователь @${user.username} подтвердил оплату:\n${subscription}`
+                    })
+                });
+
+                tg.showAlert('✅ Оплата подтверждена!');
+                tg.close();
+            } catch (error) {
+                tg.showAlert('❌ Ошибка соединения');
+            }
+        }
+
+        showCategories();
+    </script>
+</body>
+</html>
