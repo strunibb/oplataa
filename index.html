@@ -1,218 +1,369 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <title>Подтверждение оплаты</title>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <style>
-        body {
-            font-family: 'Arial', sans-serif;
-            background: linear-gradient(135deg, #6a11cb, #2575fc);
-            color: white;
-            margin: 0;
-            padding: 15px;
-            text-align: center;
-            min-height: 100vh;
-        }
+  <meta charset="UTF-8" />
+  <title>Подтверждение оплаты</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <style>
+    :root{
+      --bg1:#6a11cb; --bg2:#2575fc;
+      --glass: rgba(255,255,255,.12);
+      --line: rgba(255,255,255,.22);
+      --white:#fff; --text:#eef2ff;
+      --a1:#9b4dff; --a2:#6a11cb; --a3:#2575fc;
+      --btn: linear-gradient(135deg, var(--a1), var(--a2));
+      --btnH: linear-gradient(135deg, #b16eff, #7d2fff);
+      --panelR: 16px;
+      --trans: .22s ease;
+      --shadow: 0 10px 24px rgba(0,0,0,.28);
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0}
+    body{
+      font-family: Arial, Helvetica, sans-serif;
+      background: linear-gradient(135deg, var(--bg1), var(--bg2));
+      color: var(--white);
+      min-height: 100vh;
+      padding: 16px;
+      text-align: center;
+    }
+    h1{margin:6px 0 2px;font-size:26px;font-weight:900;letter-spacing:.3px;text-shadow:0 4px 14px rgba(0,0,0,.25)}
+    .sub{opacity:.9;font-size:13px;margin-bottom:8px}
 
-        h2 {
-            margin: 15px 0;
-            font-size: 22px;
-            font-weight: bold;
-        }
+    /* Stepper */
+    .stepper{
+      display:flex;justify-content:center;gap:10px;margin:8px auto 6px;user-select:none
+    }
+    .dot{
+      width:30px;height:30px;border-radius:50%;
+      background: #ffffff1e;border:1px solid var(--line);
+      display:grid;place-items:center;font-weight:800
+    }
+    .dot.active{background:linear-gradient(135deg,#ffffff40,#ffffff24);border-color:#ffffff66}
+    .dot.done{background:linear-gradient(135deg,#59ffa6,#29d17c);color:#173a30;border:none}
 
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 15px;
-            margin-top: 20px;
-        }
+    /* Panels */
+    .panel{max-width:960px;margin:12px auto 0;background:var(--glass);border:1px solid var(--line);border-radius:var(--panelR);box-shadow:var(--shadow);padding:14px}
 
-        .card {
-            background: rgba(255, 255, 255, 0.12);
-            border-radius: 16px;
-            padding: 15px;
-            text-align: left;
-            backdrop-filter: blur(8px);
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
-            transition: transform 0.2s ease;
-        }
+    .grid{
+      display:grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px,1fr));
+      gap: 12px;
+      margin-top: 8px;
+    }
 
-        .card:hover {
-            transform: scale(1.02);
-        }
+    .catbtn, .optbtn, .mainbtn, .backbtn, .namebtn{
+      display:block;width:100%;
+      padding:12px;border-radius:14px;border:1px solid var(--line);
+      background: linear-gradient(135deg, #ffffff22, #ffffff11);
+      color:#fff;font-weight:800;cursor:pointer;
+      box-shadow: var(--shadow);
+      transition: transform var(--trans), background var(--trans), opacity var(--trans)
+    }
+    .catbtn:hover, .optbtn:hover, .backbtn:hover, .namebtn:hover{ transform: translateY(-2px); background: linear-gradient(135deg, #ffffff33, #ffffff18) }
 
-        .card h3 {
-            margin: 0 0 10px;
-            font-size: 18px;
-            color: #fff;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-            padding-bottom: 5px;
-        }
+    .card{
+      text-align:left;padding:12px;border-radius:14px;border:1px solid var(--line);
+      background: linear-gradient(135deg, #ffffff12, #ffffff0a);
+      box-shadow: 0 6px 16px rgba(0,0,0,.22);
+      transition: transform var(--trans), box-shadow var(--trans)
+    }
+    .card:hover{ transform: translateY(-2px); box-shadow: 0 12px 28px rgba(0,0,0,.28) }
+    .card h3{margin:0 0 8px;font-size:18px;border-bottom:1px solid var(--line);padding-bottom:6px}
+    .card p{margin:6px 0;color:var(--text);font-size:14px}
 
-        .card p {
-            font-size: 14px;
-            margin: 5px 0;
-            color: #eee;
-        }
+    .row{display:flex;flex-wrap:wrap;gap:10px;margin-top:10px}
+    .optbtn{flex:1 1 130px}
 
-        .button {
-            display: block;
-            margin-top: 10px;
-            padding: 12px;
-            width: 100%;
-            background: linear-gradient(135deg, #9b4dff, #6a11cb);
-            color: white;
-            border: none;
-            border-radius: 12px;
-            font-size: 15px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: background 0.3s ease;
-        }
+    .mainbtn{
+      background: var(--btn);
+      border:none;margin-top:12px;font-size:15px
+    }
+    .mainbtn:hover{background: var(--btnH); transform: translateY(-1px)}
+    .mainbtn:disabled{opacity:.6;transform:none;cursor:default}
 
-        .button:hover {
-            background: linear-gradient(135deg, #b16eff, #7d2fff);
-        }
+    .backwrap{display:flex;justify-content:center;margin-top:12px}
+    .backbtn{width:auto;padding:10px 16px}
 
-        .hidden {
-            display: none;
-        }
+    /* file + name */
+    .filebox{margin-top:10px;display:flex;gap:8px;align-items:center;justify-content:center;flex-wrap:wrap}
+    .file-input{display:none}
+    .file-label{
+      display:inline-flex;align-items:center;gap:8px;padding:10px 12px;border-radius:12px;cursor:pointer;
+      background: linear-gradient(135deg, #ffffff22, #ffffff11); border:1px solid var(--line); font-weight:800
+    }
+    .file-label:hover{transform:translateY(-1px);background:linear-gradient(135deg,#ffffff33,#ffffff18)}
+    .file-info{font-size:12px;opacity:.95}
+    .namebtn{width:auto;padding:10px 12px}
 
-        .back-btn {
-            margin-top: 20px;
-            padding: 12px 20px;
-            background: rgba(255, 255, 255, 0.15);
-            border: none;
-            color: white;
-            border-radius: 12px;
-            cursor: pointer;
-            font-size: 14px;
-            transition: background 0.2s ease;
-        }
+    /* toast */
+    .toast{
+      position:fixed;left:50%;bottom:16px;transform:translateX(-50%);
+      background:rgba(0,0,0,.62);color:#fff;padding:10px 14px;border-radius:12px;border:1px solid rgba(255,255,255,.15);
+      backdrop-filter:blur(6px);box-shadow:0 8px 20px rgba(0,0,0,.35);opacity:0;pointer-events:none;transition:opacity .25s
+    }
+    .toast.show{opacity:1}
 
-        .back-btn:hover {
-            background: rgba(255, 255, 255, 0.3);
-        }
-    </style>
+    @media (max-width:520px){
+      .grid{grid-template-columns: 1fr}
+    }
+  </style>
 </head>
 <body>
-    <h2>🎸 Подтверждение оплаты</h2>
-    <div id="categories" class="grid"></div>
-    <div id="subscriptions" class="hidden"></div>
-    <button id="backBtn" class="back-btn hidden" onclick="showCategories()">🔙 Назад</button>
+  <h1>🎸 Подтверждение оплаты</h1>
+  <div class="sub">Выберите направление → абонемент → прикрепите фото чека → подтвердите</div>
 
-    <script>
-        const ADMIN_BOT_TOKEN = '7598736914:AAHVJUOt7okTfMh1VE_l1ZrCqaXv-r1PcWI';
-        const ADMIN_ID = '725158536';
+  <div class="stepper" id="stepper">
+    <div class="dot active" data-step="1">1</div>
+    <div class="dot" data-step="2">2</div>
+    <div class="dot" data-step="3">3</div>
+  </div>
 
-        const tg = window.Telegram.WebApp;
-        const user = tg.initDataUnsafe?.user;
+  <!-- ШАГ 1: Направление -->
+  <div id="step1" class="panel">
+    <div class="grid" id="categories"></div>
+  </div>
 
-        const data = {
-            "🎸 Гитара / Электрогитара": [
-                { title: "Личный абонемент (1 мес)", options: ["4 занятия – 3,690₽", "6 занятий – 5,290₽", "8 занятий – 6,890₽"] },
-                { title: "Личный абонемент (2 мес)", options: ["8 занятий – 7,190₽", "12 занятий – 10,490₽", "16 занятий – 13,590₽"] },
-                { title: "Утро с гитарой", options: ["4 занятия – 3,390₽", "6 занятий – 4,890₽", "8 занятий – 6,390₽"] },
-                { title: "Научись подбирать на слух", options: ["4 занятия – 3,690₽", "6 занятий – 5,290₽", "8 занятий – 6,890₽"] },
-                { title: "Семейный абонемент", options: ["4 занятия – 3,490₽", "6 занятий – 5,190₽", "8 занятий – 6,790₽"] },
-                { title: "Двойные занятия", options: ["4 занятия – 6,790₽", "6 занятий – 10,090₽", "8 занятий – 13,290₽"] }
-            ],
-            "🎹 Фортепиано / Пианино": [
-                { title: "Личный абонемент (1 мес)", options: ["4 занятия – 2,990₽", "6 занятий – 4,290₽", "8 занятий – 5,590₽"] },
-                { title: "Личный абонемент (2 мес)", options: ["8 занятий – 5,790₽", "12 занятий – 8,490₽", "16 занятий – 10,990₽"] },
-                { title: "Утро с пианино", options: ["4 занятия – 2,790₽", "6 занятий – 3,990₽", "8 занятий – 5,190₽"] },
-                { title: "Научись подбирать на слух", options: ["4 занятия – 2,990₽", "6 занятий – 4,290₽", "8 занятий – 5,590₽"] },
-                { title: "Семейный абонемент", options: ["4 занятия – 2,790₽", "6 занятий – 4,190₽", "8 занятий – 5,490₽"] },
-                { title: "Двойные занятия", options: ["4 занятия – 5,490₽", "6 занятий – 8,190₽", "8 занятий – 10,790₽"] }
-            ],
-            "🎵 Укулеле": [
-                { title: "1 мес", options: ["4 занятия – 3,390₽", "6 занятий – 4,890₽", "8 занятий – 6,390₽"] },
-                { title: "2 мес", options: ["8 занятий – 6,490₽", "12 занятий – 9,590₽", "16 занятий – 12,490₽"] }
-            ],
-            "➕ Дополнительные услуги": [
-                { title: "Отработка материала", options: ["349₽"] },
-                { title: "Запись урока", options: ["49₽"] },
-                { title: "Разбор песни", options: ["450₽"] }
-            ]
+  <!-- ШАГ 2: Абонемент -->
+  <div id="step2" class="panel" style="display:none">
+    <h3 id="chosenCategory" style="margin:0 0 8px"></h3>
+    <div id="plans" class="grid"></div>
+    <div class="backwrap"><button class="backbtn" type="button" onclick="goStep(1)">← Назад</button></div>
+  </div>
+
+  <!-- ШАГ 3: Чек + отправка -->
+  <div id="step3" class="panel" style="display:none">
+    <h3 style="margin:0 0 8px">Подтверждение</h3>
+    <div id="summary" style="font-size:14px;opacity:.95"></div>
+
+    <div class="filebox">
+      <input type="file" id="receipt" class="file-input" accept="image/*">
+      <label class="file-label" for="receipt">📎 Прикрепить чек</label>
+      <span id="fileInfo" class="file-info">файл не выбран</span>
+
+      <!-- Новая кнопка для ввода фамилии, появляется после выбора файла -->
+      <button id="lastnameBtn" class="namebtn" type="button" style="display:none">📝 Фамилия учени(цы)</button>
+    </div>
+
+    <button id="sendBtn" class="mainbtn">✅ Отправить подтверждение</button>
+    <div class="backwrap"><button class="backbtn" type="button" onclick="goStep(2)">← Назад</button></div>
+  </div>
+
+  <div id="toast" class="toast"></div>
+
+  <script>
+    // ==== Настройки ====
+    const ADMIN_BOT_TOKEN = '7598736914:AAHVJUOt7okTfMh1VE_l1ZrCqaXv-r1PcWI';
+    const ADMIN_ID = '725158536';
+
+    // ==== Telegram WebApp ====
+    const tg = window.Telegram.WebApp;
+    tg?.expand?.(); tg?.ready?.();
+    const me = tg?.initDataUnsafe?.user || null;
+
+    // ==== Данные (цены убраны) ====
+    const DATA = {
+      "🎸 Гитара / Электрогитара": [
+        { title: "Личный абонемент (1 мес)", options: ["4 занятия", "6 занятий", "8 занятий"] },
+        { title: "Личный абонемент (2 мес)", options: ["8 занятий", "12 занятий", "16 занятий"] },
+        { title: "Утро с гитарой", options: ["4 занятия", "6 занятий", "8 занятий"] },
+        { title: "Научись подбирать на слух", options: ["4 занятия", "6 занятий", "8 занятий"] },
+        { title: "Семейный абонемент", options: ["4 занятия", "6 занятий", "8 занятий"] },
+        { title: "Двойные занятия", options: ["4 занятия", "6 занятий", "8 занятий"] }
+      ],
+      "🎹 Фортепиано / Пианино": [
+        { title: "Личный абонемент (1 мес)", options: ["4 занятия", "6 занятий", "8 занятий"] },
+        { title: "Личный абонемент (2 мес)", options: ["8 занятий", "12 занятий", "16 занятий"] },
+        { title: "Утро с пианино", options: ["4 занятия", "6 занятий", "8 занятий"] },
+        { title: "Научись подбирать на слух", options: ["4 занятия", "6 занятий", "8 занятий"] },
+        { title: "Семейный абонемент", options: ["4 занятия", "6 занятий", "8 занятий"] },
+        { title: "Двойные занятия", options: ["4 занятия", "6 занятий", "8 занятий"] }
+      ],
+      "🎵 Укулеле": [
+        { title: "1 мес", options: ["4 занятия", "6 занятий", "8 занятий"] },
+        { title: "2 мес", options: ["8 занятий", "12 занятий", "16 занятий"] }
+      ]
+    };
+
+    // ==== Состояние мастера ====
+    const state = { category:null, plan:null, option:null, file:null, lastname:null };
+
+    // ==== DOM ====
+    const stepDots = [...document.querySelectorAll('.dot')];
+    const step1 = document.getElementById('step1');
+    const step2 = document.getElementById('step2');
+    const step3 = document.getElementById('step3');
+    const categories = document.getElementById('categories');
+    const plansWrap = document.getElementById('plans');
+    const chosenCategory = document.getElementById('chosenCategory');
+    const fileInput = document.getElementById('receipt');
+    const fileInfo = document.getElementById('fileInfo');
+    const lastnameBtn = document.getElementById('lastnameBtn');
+    const sendBtn = document.getElementById('sendBtn');
+    const toast = document.getElementById('toast');
+
+    // ==== UI helpers ====
+    function setStep(n){
+      stepDots.forEach((d,i)=>{
+        d.classList.remove('active','done');
+        if(i+1 < n) d.classList.add('done');
+        else if(i+1 === n) d.classList.add('active');
+      });
+      step1.style.display = n===1?'block':'none';
+      step2.style.display = n===2?'block':'none';
+      step3.style.display = n===3?'block':'none';
+    }
+    function goStep(n){ setStep(n); }
+    function toastMsg(msg,ms=2200){ toast.textContent=msg; toast.classList.add('show'); setTimeout(()=>toast.classList.remove('show'),ms); }
+
+    // ==== Рендер шагов ====
+    function renderStep1(){
+      categories.innerHTML = '';
+      Object.keys(DATA).forEach(cat=>{
+        const btn = document.createElement('button');
+        btn.className = 'catbtn';
+        btn.textContent = cat;
+        btn.onclick = ()=>{
+          state.category = cat; state.plan=null; state.option=null;
+          renderStep2(); setStep(2);
         };
+        categories.appendChild(btn);
+      });
+    }
 
-        const categoriesDiv = document.getElementById('categories');
-        const subsDiv = document.getElementById('subscriptions');
-        const backBtn = document.getElementById('backBtn');
+    function renderStep2(){
+      chosenCategory.textContent = `Направление: ${state.category}`;
+      plansWrap.innerHTML = '';
+      const plans = DATA[state.category];
 
-        function showCategories() {
-            subsDiv.classList.add('hidden');
-            backBtn.classList.add('hidden');
-            categoriesDiv.classList.remove('hidden');
-            categoriesDiv.innerHTML = '';
-            Object.keys(data).forEach(cat => {
-                const btn = document.createElement('button');
-                btn.className = 'button';
-                btn.innerText = cat;
-                btn.onclick = () => showSubscriptions(cat);
-                categoriesDiv.appendChild(btn);
-            });
-        }
+      plans.forEach((p)=>{
+        const card = document.createElement('div');
+        card.className = 'card';
 
-        function showSubscriptions(category) {
-            categoriesDiv.classList.add('hidden');
-            subsDiv.innerHTML = '';
-            subsDiv.classList.remove('hidden');
-            backBtn.classList.remove('hidden');
+        const h = document.createElement('h3'); h.textContent = p.title; card.appendChild(h);
+        const desc = document.createElement('p'); desc.textContent = 'Выберите вариант:'; card.appendChild(desc);
 
-            const grid = document.createElement('div');
-            grid.className = 'grid';
+        const row = document.createElement('div'); row.className = 'row';
+        p.options.forEach(opt=>{
+          const b = document.createElement('button');
+          b.className = 'optbtn';
+          b.textContent = opt;
+          b.onclick = ()=>{
+            state.plan = p.title; state.option = opt;
+            renderStep3(); setStep(3);
+          };
+          row.appendChild(b);
+        });
+        card.appendChild(row);
 
-            data[category].forEach(sub => {
-                const card = document.createElement('div');
-                card.className = 'card';
-                const title = document.createElement('h3');
-                title.innerText = sub.title;
-                card.appendChild(title);
+        plansWrap.appendChild(card);
+      });
+    }
 
-                sub.options.forEach(opt => {
-                    const p = document.createElement('p');
-                    p.innerText = opt;
-                    card.appendChild(p);
-                    const btn = document.createElement('button');
-                    btn.className = 'button';
-                    btn.innerText = `✅ Выбрать: ${opt}`;
-                    btn.onclick = () => confirmPayment(`${sub.title} — ${opt}`);
-                    card.appendChild(btn);
-                });
+    function renderStep3(){
+      const who = me?.username ? '@'+me.username : (me?.id ? 'id:'+me.id : (state.lastname || 'гость'));
+      document.getElementById('summary').innerHTML =
+        `<div style="line-height:1.6">
+          👤 <b>${who}</b> ${state.lastname ? `(фамилия: ${state.lastname})` : ''}<br>
+          📚 <b>${state.category}</b><br>
+          🧾 <b>${state.plan}</b><br>
+          💰 <b>${state.option}</b>
+        </div>`;
+      // сброс файла и фамилии при входе на шаг
+      fileInput.value=''; fileInfo.textContent='файл не выбран'; state.file=null;
+      lastnameBtn.style.display='none';
+    }
 
-                grid.appendChild(card);
-            });
+    // ==== File handling ====
+    fileInput.addEventListener('change', ()=>{
+      const f = fileInput.files?.[0];
+      if(!f){ fileInfo.textContent='файл не выбран'; state.file=null; lastnameBtn.style.display='none'; return; }
+      if(f.size > 15*1024*1024){ fileInfo.textContent='слишком большой файл (>15MB)'; toastMsg('Файл >15MB'); fileInput.value=''; state.file=null; lastnameBtn.style.display='none'; return; }
+      fileInfo.textContent = `загружен: ${f.name}`;
+      state.file = f;
+      lastnameBtn.style.display='inline-block'; // показать кнопку после прикрепления чека
+    });
 
-            subsDiv.appendChild(grid);
-        }
+    // ==== Ввод фамилии ====
+    lastnameBtn.addEventListener('click', ()=>{
+      const val = (window.prompt('Введите фамилию ученика(цы):', state.lastname || '') || '').trim();
+      if(!val){ toastMsg('Фамилия не указана'); return; }
+      state.lastname = val;
+      toastMsg('Фамилия добавлена');
+      // обновим summary
+      renderStep3();
+      // вернём видимость кнопке и файлу после перерендера
+      if(state.file){ fileInfo.textContent = `загружен: ${state.file.name}`; lastnameBtn.style.display='inline-block'; }
+    });
 
-        async function confirmPayment(subscription) {
-            if (!user?.username) {
-                tg.showAlert('❌ Войдите в Telegram!');
-                return;
-            }
+    // ==== Telegram API ====
+    async function sendMessage(text){
+      const url = `https://api.telegram.org/bot${ADMIN_BOT_TOKEN}/sendMessage`;
+      const res = await fetch(url, {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ chat_id: ADMIN_ID, text })
+      });
+      if(!res.ok) throw new Error('sendMessage failed');
+      return res.json();
+    }
+    async function sendPhoto(file, caption){
+      const url = `https://api.telegram.org/bot${ADMIN_BOT_TOKEN}/sendPhoto`;
+      const fd = new FormData();
+      fd.append('chat_id', ADMIN_ID);
+      fd.append('caption', caption);
+      fd.append('photo', file, file.name || 'check.jpg');
+      const res = await fetch(url,{ method:'POST', body:fd });
+      if(!res.ok) throw new Error('sendPhoto failed');
+      return res.json();
+    }
 
-            try {
-                await fetch(`https://api.telegram.org/bot${ADMIN_BOT_TOKEN}/sendMessage`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        chat_id: ADMIN_ID,
-                        text: `💳 Пользователь @${user.username} подтвердил оплату:\n${subscription}`
-                    })
-                });
+    // ==== Confirm ====
+    sendBtn.addEventListener('click', async ()=>{
+      if(!state.category || !state.plan || !state.option){
+        toastMsg('Выберите направление и абонемент'); return;
+      }
 
-                tg.showAlert('✅ Оплата подтверждена!');
-                tg.close();
-            } catch (error) {
-                tg.showAlert('❌ Ошибка соединения');
-            }
-        }
+      // Логика "вместо «гость» — фамилия ученика"
+      // Если нет username и id, и введена фамилия — используем её.
+      let who;
+      if(me?.username){ who = '@' + me.username; }
+      else if(me?.id){ who = 'id:' + me.id; }
+      else { who = state.lastname || 'гость'; }
 
-        showCategories();
-    </script>
+      const caption =
+        `💳 Подтверждение оплаты\n`+
+        `👤 Пользователь: ${who}\n`+
+        (state.lastname ? `🧑‍🎓 Фамилия: ${state.lastname}\n` : '')+
+        `📚 Категория: ${state.category}\n`+
+        `🧾 Абонемент: ${state.plan}\n`+
+        `💼 Вариант: ${state.option}\n`+
+        `📎 Чек: ${state.file ? 'прикреплён' : 'нет'}`;
+
+      sendBtn.disabled = true; const txt = sendBtn.textContent; sendBtn.textContent='Отправляем…';
+
+      try{
+        if(state.file){ await sendPhoto(state.file, caption); }
+        else { await sendMessage(caption); }
+
+        tg?.HapticFeedback?.impactOccurred?.('soft');
+        tg?.showAlert?.('✅ Отправлено! Спасибо!');
+        toastMsg('Заявка отправлена ✅');
+        // tg.close(); // при необходимости закрыть webapp
+      }catch(e){
+        console.error(e);
+        tg?.showAlert?.('❌ Не удалось отправить. Попробуйте ещё раз.');
+        toastMsg('Ошибка отправки ❌');
+      }finally{
+        sendBtn.disabled=false; sendBtn.textContent=txt;
+      }
+    });
+
+    // ==== Init ====
+    function init(){
+      renderStep1(); setStep(1);
+    }
+    init();
+  </script>
 </body>
 </html>
