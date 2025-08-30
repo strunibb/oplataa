@@ -32,56 +32,34 @@
     .sub{opacity:.9;font-size:13px;margin-bottom:8px}
 
     /* Stepper */
-    .stepper{
-      display:flex;justify-content:center;gap:10px;margin:8px auto 6px;user-select:none
-    }
-    .dot{
-      width:30px;height:30px;border-radius:50%;
-      background: #ffffff1e;border:1px solid var(--line);
-      display:grid;place-items:center;font-weight:800
-    }
+    .stepper{ display:flex;justify-content:center;gap:10px;margin:8px auto 6px;user-select:none }
+    .dot{ width:30px;height:30px;border-radius:50%; background:#ffffff1e;border:1px solid var(--line); display:grid;place-items:center;font-weight:800 }
     .dot.active{background:linear-gradient(135deg,#ffffff40,#ffffff24);border-color:#ffffff66}
     .dot.done{background:linear-gradient(135deg,#59ffa6,#29d17c);color:#173a30;border:none}
 
     /* Panels */
     .panel{max-width:960px;margin:12px auto 0;background:var(--glass);border:1px solid var(--line);border-radius:var(--panelR);box-shadow:var(--shadow);padding:14px}
 
-    .grid{
-      display:grid;
-      grid-template-columns: repeat(auto-fill, minmax(250px,1fr));
-      gap: 12px;
-      margin-top: 8px;
-    }
+    .grid{ display:grid; grid-template-columns: repeat(auto-fill, minmax(250px,1fr)); gap:12px; margin-top:8px }
 
     .catbtn, .optbtn, .mainbtn, .backbtn, .namebtn{
-      display:block;width:100%;
-      padding:12px;border-radius:14px;border:1px solid var(--line);
-      background: linear-gradient(135deg, #ffffff22, #ffffff11);
-      color:#fff;font-weight:800;cursor:pointer;
-      box-shadow: var(--shadow);
-      transition: transform var(--trans), background var(--trans), opacity var(--trans)
+      display:block;width:100%; padding:12px;border-radius:14px;border:1px solid var(--line);
+      background: linear-gradient(135deg, #ffffff22, #ffffff11); color:#fff;font-weight:800;cursor:pointer;
+      box-shadow: var(--shadow); transition: transform var(--trans), background var(--trans), opacity var(--trans)
     }
     .catbtn:hover, .optbtn:hover, .backbtn:hover, .namebtn:hover{ transform: translateY(-2px); background: linear-gradient(135deg, #ffffff33, #ffffff18) }
 
-    .card{
-      text-align:left;padding:12px;border-radius:14px;border:1px solid var(--line);
-      background: linear-gradient(135deg, #ffffff12, #ffffff0a);
-      box-shadow: 0 6px 16px rgba(0,0,0,.22);
-      transition: transform var(--trans), box-shadow var(--trans)
-    }
-    .card:hover{ transform: translateY(-2px); box-shadow: 0 12px 28px rgba(0,0,0,.28) }
+    .card{ text-align:left;padding:12px;border-radius:14px;border:1px solid var(--line); background: linear-gradient(135deg, #ffffff12, #ffffff0a); box-shadow:0 6px 16px rgba(0,0,0,.22); transition: transform var(--trans), box-shadow var(--trans) }
+    .card:hover{ transform: translateY(-2px); box-shadow:0 12px 28px rgba(0,0,0,.28) }
     .card h3{margin:0 0 8px;font-size:18px;border-bottom:1px solid var(--line);padding-bottom:6px}
     .card p{margin:6px 0;color:var(--text);font-size:14px}
 
     .row{display:flex;flex-wrap:wrap;gap:10px;margin-top:10px}
     .optbtn{flex:1 1 130px}
 
-    .mainbtn{
-      background: var(--btn);
-      border:none;margin-top:12px;font-size:15px
-    }
-    .mainbtn:hover{background: var(--btnH); transform: translateY(-1px)}
-    .mainbtn:disabled{opacity:.6;transform:none;cursor:default}
+    .mainbtn{ background: var(--btn); border:none;margin-top:12px;font-size:15px }
+    .mainbtn:hover{ background: var(--btnH); transform: translateY(-1px) }
+    .mainbtn:disabled{ opacity:.6;transform:none;cursor:not-allowed;filter:grayscale(0.2) }
 
     .backwrap{display:flex;justify-content:center;margin-top:12px}
     .backbtn{width:auto;padding:10px 16px}
@@ -89,30 +67,24 @@
     /* file + name */
     .filebox{margin-top:10px;display:flex;gap:8px;align-items:center;justify-content:center;flex-wrap:wrap}
     .file-input{display:none}
-    .file-label{
-      display:inline-flex;align-items:center;gap:8px;padding:10px 12px;border-radius:12px;cursor:pointer;
-      background: linear-gradient(135deg, #ffffff22, #ffffff11); border:1px solid var(--line); font-weight:800
-    }
+    .file-label{ display:inline-flex;align-items:center;gap:8px;padding:10px 12px;border-radius:12px;cursor:pointer; background:linear-gradient(135deg, #ffffff22, #ffffff11); border:1px solid var(--line); font-weight:800 }
     .file-label:hover{transform:translateY(-1px);background:linear-gradient(135deg,#ffffff33,#ffffff18)}
     .file-info{font-size:12px;opacity:.95}
     .namebtn{width:auto;padding:10px 12px}
 
+    /* hint */
+    .hint{margin-top:8px;font-size:12px;opacity:.9}
+
     /* toast */
-    .toast{
-      position:fixed;left:50%;bottom:16px;transform:translateX(-50%);
-      background:rgba(0,0,0,.62);color:#fff;padding:10px 14px;border-radius:12px;border:1px solid rgba(255,255,255,.15);
-      backdrop-filter:blur(6px);box-shadow:0 8px 20px rgba(0,0,0,.35);opacity:0;pointer-events:none;transition:opacity .25s
-    }
+    .toast{ position:fixed;left:50%;bottom:16px;transform:translateX(-50%); background:rgba(0,0,0,.62);color:#fff;padding:10px 14px;border-radius:12px;border:1px solid rgba(255,255,255,.15); backdrop-filter:blur(6px);box-shadow:0 8px 20px rgba(0,0,0,.35);opacity:0;pointer-events:none;transition:opacity .25s }
     .toast.show{opacity:1}
 
-    @media (max-width:520px){
-      .grid{grid-template-columns: 1fr}
-    }
+    @media (max-width:520px){ .grid{grid-template-columns:1fr} }
   </style>
 </head>
 <body>
   <h1>🎸 Подтверждение оплаты</h1>
-  <div class="sub">Выберите направление → абонемент → прикрепите фото чека → подтвердите</div>
+  <div class="sub">Выберите направление → абонемент → прикрепите фото чека → укажите фамилию → подтвердите</div>
 
   <div class="stepper" id="stepper">
     <div class="dot active" data-step="1">1</div>
@@ -141,12 +113,13 @@
       <input type="file" id="receipt" class="file-input" accept="image/*">
       <label class="file-label" for="receipt">📎 Прикрепить чек</label>
       <span id="fileInfo" class="file-info">файл не выбран</span>
-
-      <!-- Новая кнопка для ввода фамилии, появляется после выбора файла -->
+      <!-- Кнопка ввода фамилии показывается после прикрепления чека -->
       <button id="lastnameBtn" class="namebtn" type="button" style="display:none">📝 Фамилия учени(цы)</button>
     </div>
 
-    <button id="sendBtn" class="mainbtn">✅ Отправить подтверждение</button>
+    <div id="hint" class="hint">Чтобы подтвердить, прикрепите чек и укажите фамилию ученика(цы).</div>
+
+    <button id="sendBtn" class="mainbtn" disabled>✅ Отправить подтверждение</button>
     <div class="backwrap"><button class="backbtn" type="button" onclick="goStep(2)">← Назад</button></div>
   </div>
 
@@ -202,6 +175,8 @@
     const lastnameBtn = document.getElementById('lastnameBtn');
     const sendBtn = document.getElementById('sendBtn');
     const toast = document.getElementById('toast');
+    const hint = document.getElementById('hint');
+    const summaryEl = document.getElementById('summary');
 
     // ==== UI helpers ====
     function setStep(n){
@@ -216,6 +191,25 @@
     }
     function goStep(n){ setStep(n); }
     function toastMsg(msg,ms=2200){ toast.textContent=msg; toast.classList.add('show'); setTimeout(()=>toast.classList.remove('show'),ms); }
+
+    // Управление доступностью кнопки "Отправить"
+    function updateSendState(){
+      const hasFile = !!state.file;
+      const hasLastname = !!(state.lastname && state.lastname.trim());
+      const ready = hasFile && hasLastname;
+      sendBtn.disabled = !ready;
+      hint.textContent = ready ? 'Все готово к отправке.' : 'Чтобы подтвердить, прикрепите чек и укажите фамилию ученика(цы).';
+    }
+
+    function updateSummary(){
+      const whoBase = me?.username ? '@'+me.username : (me?.id ? 'id:'+me.id : 'гость');
+      summaryEl.innerHTML = `<div style="line-height:1.6">
+          👤 <b>${whoBase}</b> ${state.lastname ? `(фамилия: ${state.lastname})` : ''}<br>
+          📚 <b>${state.category}</b><br>
+          🧾 <b>${state.plan}</b><br>
+          💰 <b>${state.option}</b>
+        </div>`;
+    }
 
     // ==== Рендер шагов ====
     function renderStep1(){
@@ -262,51 +256,38 @@
     }
 
     function renderStep3(){
-      const who = me?.username ? '@'+me.username : (me?.id ? 'id:'+me.id : (state.lastname || 'гость'));
-      document.getElementById('summary').innerHTML =
-        `<div style="line-height:1.6">
-          👤 <b>${who}</b> ${state.lastname ? `(фамилия: ${state.lastname})` : ''}<br>
-          📚 <b>${state.category}</b><br>
-          🧾 <b>${state.plan}</b><br>
-          💰 <b>${state.option}</b>
-        </div>`;
-      // сброс файла и фамилии при входе на шаг
-      fileInput.value=''; fileInfo.textContent='файл не выбран'; state.file=null;
-      lastnameBtn.style.display='none';
+      // НИЧЕГО НЕ СБРАСЫВАЕМ! Файл и фамилия сохраняются до отправки
+      updateSummary();
+
+      // UI для файла/фамилии
+      if(state.file){ fileInfo.textContent = `загружен: ${state.file.name}`; lastnameBtn.style.display='inline-block'; }
+      else { fileInfo.textContent = 'файл не выбран'; lastnameBtn.style.display='none'; }
+
+      updateSendState();
     }
 
     // ==== File handling ====
     fileInput.addEventListener('change', ()=>{
       const f = fileInput.files?.[0];
-      if(!f){ fileInfo.textContent='файл не выбран'; state.file=null; lastnameBtn.style.display='none'; return; }
-      if(f.size > 15*1024*1024){ fileInfo.textContent='слишком большой файл (>15MB)'; toastMsg('Файл >15MB'); fileInput.value=''; state.file=null; lastnameBtn.style.display='none'; return; }
+      if(!f){ fileInfo.textContent='файл не выбран'; state.file=null; lastnameBtn.style.display='none'; updateSendState(); return; }
+      if(f.size > 15*1024*1024){ fileInfo.textContent='слишком большой файл (>15MB)'; toastMsg('Файл >15MB'); fileInput.value=''; state.file=null; lastnameBtn.style.display='none'; updateSendState(); return; }
       fileInfo.textContent = `загружен: ${f.name}`;
       state.file = f;
-      lastnameBtn.style.display='inline-block'; // показать кнопку после прикрепления чека
+      lastnameBtn.style.display='inline-block';
+      updateSendState();
     });
 
     // ==== Ввод фамилии ====
     lastnameBtn.addEventListener('click', ()=>{
       const val = (window.prompt('Введите фамилию ученика(цы):', state.lastname || '') || '').trim();
-      if(!val){ toastMsg('Фамилия не указана'); return; }
+      if(!val){ toastMsg('Фамилия не указана'); updateSendState(); return; }
       state.lastname = val;
       toastMsg('Фамилия добавлена');
-      // обновим summary
-      renderStep3();
-      // вернём видимость кнопке и файлу после перерендера
-      if(state.file){ fileInfo.textContent = `загружен: ${state.file.name}`; lastnameBtn.style.display='inline-block'; }
+      updateSummary();
+      updateSendState();
     });
 
     // ==== Telegram API ====
-    async function sendMessage(text){
-      const url = `https://api.telegram.org/bot${ADMIN_BOT_TOKEN}/sendMessage`;
-      const res = await fetch(url, {
-        method:'POST', headers:{'Content-Type':'application/json'},
-        body: JSON.stringify({ chat_id: ADMIN_ID, text })
-      });
-      if(!res.ok) throw new Error('sendMessage failed');
-      return res.json();
-    }
     async function sendPhoto(file, caption){
       const url = `https://api.telegram.org/bot${ADMIN_BOT_TOKEN}/sendPhoto`;
       const fd = new FormData();
@@ -320,49 +301,41 @@
 
     // ==== Confirm ====
     sendBtn.addEventListener('click', async ()=>{
-      if(!state.category || !state.plan || !state.option){
-        toastMsg('Выберите направление и абонемент'); return;
-      }
+      if(!state.category || !state.plan || !state.option){ toastMsg('Выберите направление и абонемент'); return; }
 
-      // Логика "вместо «гость» — фамилия ученика"
-      // Если нет username и id, и введена фамилия — используем её.
-      let who;
-      if(me?.username){ who = '@' + me.username; }
-      else if(me?.id){ who = 'id:' + me.id; }
-      else { who = state.lastname || 'гость'; }
+      // ЖЁСТКОЕ УСЛОВИЕ: без чека и фамилии — отправка запрещена
+      if(!state.file){ toastMsg('Прикрепите фото чека'); return; }
+      if(!state.lastname || !state.lastname.trim()){ toastMsg('Укажите фамилию ученика(цы)'); return; }
 
+      const whoBase = me?.username ? '@'+me.username : (me?.id ? 'id:'+me.id : 'гость');
       const caption =
         `💳 Подтверждение оплаты\n`+
-        `👤 Пользователь: ${who}\n`+
-        (state.lastname ? `🧑‍🎓 Фамилия: ${state.lastname}\n` : '')+
+        `👤 Пользователь: ${whoBase}\n`+
+        `🧑‍🎓 Фамилия: ${state.lastname}\n`+
         `📚 Категория: ${state.category}\n`+
         `🧾 Абонемент: ${state.plan}\n`+
         `💼 Вариант: ${state.option}\n`+
-        `📎 Чек: ${state.file ? 'прикреплён' : 'нет'}`;
+        `📎 Чек: прикреплён`;
 
       sendBtn.disabled = true; const txt = sendBtn.textContent; sendBtn.textContent='Отправляем…';
 
       try{
-        if(state.file){ await sendPhoto(state.file, caption); }
-        else { await sendMessage(caption); }
-
+        await sendPhoto(state.file, caption); // только с фото
         tg?.HapticFeedback?.impactOccurred?.('soft');
         tg?.showAlert?.('✅ Отправлено! Спасибо!');
         toastMsg('Заявка отправлена ✅');
-        // tg.close(); // при необходимости закрыть webapp
+        // tg.close();
       }catch(e){
         console.error(e);
         tg?.showAlert?.('❌ Не удалось отправить. Попробуйте ещё раз.');
         toastMsg('Ошибка отправки ❌');
       }finally{
-        sendBtn.disabled=false; sendBtn.textContent=txt;
+        sendBtn.textContent=txt; updateSendState(); // вернём доступность по текущему состоянию
       }
     });
 
     // ==== Init ====
-    function init(){
-      renderStep1(); setStep(1);
-    }
+    function init(){ renderStep1(); setStep(1); }
     init();
   </script>
 </body>
