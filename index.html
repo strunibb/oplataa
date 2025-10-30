@@ -84,7 +84,7 @@
 </head>
 <body>
   <h1>🎸 Подтверждение оплаты</h1>
-  <div class="sub">Выберите направление → абонемент → прикрепите фото чека → укажите фамилию → подтвердите</div>
+  <div class="sub">Выберите направление → абонемент → прикрепите фото/файл чека → укажите фамилию → подтвердите</div>
 
   <div class="stepper" id="stepper">
     <div class="dot active" data-step="1">1</div>
@@ -110,7 +110,7 @@
     <div id="summary" style="font-size:14px;opacity:.95"></div>
 
     <div class="filebox">
-      <input type="file" id="receipt" class="file-input" accept="image/*">
+      <input type="file" id="receipt" class="file-input" accept="image/*,.pdf,.heic,.heif,.png,.jpg,.jpeg,.webp">
       <label class="file-label" for="receipt">📎 Прикрепить чек</label>
       <span id="fileInfo" class="file-info">файл не выбран</span>
       <!-- Кнопка ввода фамилии показывается после прикрепления чека -->
@@ -128,7 +128,8 @@
   <script>
     // ==== Настройки ====
     const ADMIN_BOT_TOKEN = '7598736914:AAF1EK5D_g0gjflP7bKdtSgz8OyNz1q59PU';
-    const ADMIN_ID = '725158536';
+    // Отправляем сразу нескольким администраторам
+    const ADMIN_IDS = ['725158536', '5056461242']; // + @Yuliya2821
 
     // ==== Telegram WebApp и проверка среды ====
     const tg = window.Telegram?.WebApp;
@@ -164,7 +165,8 @@
       }
     }
 
-    // ==== Данные: новые абонементы ====
+    // ==== Данные (направления/абонементы) ====
+    // Поддержка необязательного поля desc у планов
     const DATA = {
       "🎸 Гитара / Электрогитара": [
         { title: "🧩 Гибкий (1 месяц)", options: ["4 урока", "8 уроков"] },
@@ -180,6 +182,30 @@
       "🎵 Укулеле": [
         { title: "🌱 Личный абонемент (1 месяц)", options: ["4 занятия (40 мин)", "8 занятий (40 мин)"] },
         { title: "🌿 Укулеле (2 месяца)", options: ["8 занятий (40 мин)", "16 занятий (40 мин)"] }
+      ],
+      // --- Новые разделы со скриншота ---
+      "👩‍🏫 Подписка с преподавателем": [
+        {
+          title: "Стандарт",
+          desc: "Каждую неделю 1–3 новые песни, проверка ДЗ, разбор ошибок.",
+          options: ["1 месяц — 2 990 ₽/мес", "2 месяца — 4 990 ₽ (выгода 1 000 ₽)"]
+        },
+        {
+          title: "Про",
+          desc: "В «Про» — личная сессия 40 минут в конце месяца.",
+          options: ["1 месяц — 3 590 ₽/мес", "2 месяца — 6 090 ₽ (выгода 1 090 ₽)"]
+        }
+      ],
+      "📘 Курс «Базовый минимум»": [
+        {
+          title: "Опции оплаты",
+          desc: "Видео + материалы с бессрочным доступом. 1–3 песни в модуле. Без обратной связи.",
+          options: [
+            "Вся программа сразу (8 модулей) — 7 490 ₽",
+            "2 модуля в месяц — 1 872 ₽",
+            "4 модуля в месяц — 3 745 ₽"
+          ]
+        }
       ]
     };
 
@@ -227,8 +253,9 @@
 
     function updateSummary(){
       const whoBase = me?.username ? '@'+me.username : (me?.id ? 'id:'+me.id : 'гость');
+      const fullName = [me?.first_name, me?.last_name].filter(Boolean).join(' ');
       summaryEl.innerHTML = `<div style="line-height:1.6">
-          👤 <b>${whoBase}</b> ${state.lastname ? `(фамилия: ${state.lastname})` : ''}<br>
+          👤 <b>${whoBase}${fullName ? ' ('+fullName+')' : ''}</b> ${state.lastname ? `(фамилия: ${state.lastname})` : ''}<br>
           📚 <b>${state.category || '—'}</b><br>
           🧾 <b>${state.plan || '—'}</b><br>
           💼 <b>${state.option || '—'}</b>
@@ -260,7 +287,7 @@
         card.className = 'card';
 
         const h = document.createElement('h3'); h.textContent = p.title; card.appendChild(h);
-        const desc = document.createElement('p'); desc.textContent = 'Выберите вариант:'; card.appendChild(desc);
+        const desc = document.createElement('p'); desc.textContent = p.desc || 'Выберите вариант:'; card.appendChild(desc);
 
         const row = document.createElement('div'); row.className = 'row';
         p.options.forEach(opt=>{
@@ -284,7 +311,7 @@
       updateSummary();
 
       // UI для файла/фамилии
-      if(state.file){ fileInfo.textContent = `загружен: ${state.file.name}`; lastnameBtn.style.display='inline-block'; }
+      if(state.file){ fileInfo.textContent = `загружен: ${state.file.name || 'файл'}`; lastnameBtn.style.display='inline-block'; }
       else { fileInfo.textContent = 'файл не выбран'; lastnameBtn.style.display='none'; }
 
       updateSendState();
@@ -293,9 +320,18 @@
     // ==== File handling ====
     fileInput.addEventListener('change', ()=>{
       const f = fileInput.files?.[0];
-      if(!f){ fileInfo.textContent='файл не выбран'; state.file=null; lastnameBtn.style.display='none'; updateSendState(); return; }
-      if(f.size > 15*1024*1024){ fileInfo.textContent='слишком большой файл (>15MB)'; toastMsg('Файл >15MB'); fileInput.value=''; state.file=null; lastnameBtn.style.display='none'; updateSendState(); return; }
-      fileInfo.textContent = `загружен: ${f.name}`;
+      if(!f){
+        fileInfo.textContent='файл не выбран'; state.file=null; lastnameBtn.style.display='none'; updateSendState(); return;
+      }
+      // Telegram Bot API для документов до 50 МБ. Держим запас.
+      const MAX_MB = 48;
+      if(f.size > MAX_MB*1024*1024){
+        fileInfo.textContent=`слишком большой файл (> ${MAX_MB}MB)`;
+        toastMsg(`Файл > ${MAX_MB}MB`);
+        fileInput.value='';
+        state.file=null; lastnameBtn.style.display='none'; updateSendState(); return;
+      }
+      fileInfo.textContent = `загружен: ${f.name || 'файл'}`;
       state.file = f;
       lastnameBtn.style.display='inline-block';
       updateSendState();
@@ -312,15 +348,33 @@
     });
 
     // ==== Telegram API ====
-    async function sendPhoto(file, caption){
-      const url = `https://api.telegram.org/bot${ADMIN_BOT_TOKEN}/sendPhoto`;
-      const fd = new FormData();
-      fd.append('chat_id', ADMIN_ID);
-      fd.append('caption', caption);
-      fd.append('photo', file, file.name || 'check.jpg');
-      const res = await fetch(url,{ method:'POST', body:fd });
-      if(!res.ok) throw new Error('sendPhoto failed');
-      return res.json();
+    async function sendDocument(file, captionHtml){
+      const url = `https://api.telegram.org/bot${ADMIN_BOT_TOKEN}/sendDocument`;
+      // Отправляем всем администраторам параллельно
+      const jobs = ADMIN_IDS.map(async (CHAT_ID)=>{
+        const fd = new FormData();
+        fd.append('chat_id', CHAT_ID);
+        fd.append('caption', captionHtml);
+        fd.append('parse_mode', 'HTML'); // чтобы кликался tg://user?id=...
+        fd.append('document', file, file.name || 'check.jpg');
+        const res = await fetch(url,{ method:'POST', body:fd });
+        // Пытаемся вытащить описание ошибки от Telegram
+        let details = '';
+        try{
+          const js = await res.clone().json();
+          if(!res.ok) details = js?.description || '';
+        }catch(_){}
+        if(!res.ok) throw new Error(details || 'sendDocument failed');
+        return res.json();
+      });
+      // Хотим, чтобы падение одного не ломало остальные: собираем результаты
+      const results = await Promise.allSettled(jobs);
+      const failures = results.filter(r=>r.status==='rejected');
+      if (failures.length === ADMIN_IDS.length){
+        // упало везде — бросаем общую ошибку (первую по сообщению)
+        throw new Error(failures[0].reason?.message || 'Не удалось отправить ни одному администратору');
+      }
+      return results;
     }
 
     // ==== Confirm ====
@@ -328,35 +382,43 @@
       if(!state.category || !state.plan || !state.option){ toastMsg('Выберите направление и абонемент'); return; }
 
       // ЖЁСТКОЕ УСЛОВИЕ: без чека и фамилии — отправка запрещена
-      if(!state.file){ toastMsg('Прикрепите фото чека'); return; }
+      if(!state.file){ toastMsg('Прикрепите чек/файл'); return; }
       if(!state.lastname || !state.lastname.trim()){ toastMsg('Укажите фамилию ученика(цы)'); return; }
 
       const whoBase = me?.username ? '@'+me.username : (me?.id ? 'id:'+me.id : 'гость');
-      const caption =
-        `💳 Подтверждение оплаты\n`+
-        `👤 Пользователь: ${whoBase}\n`+
-        `🧑‍🎓 Фамилия: ${state.lastname}\n`+
-        `📚 Категория: ${state.category}\n`+
-        `🧾 Абонемент: ${state.plan}\n`+
-        `💼 Вариант: ${state.option}\n`+
-        `📎 Чек: прикреплён`;
+      const fullName = [me?.first_name, me?.last_name].filter(Boolean).join(' ');
+      const mention = me?.id ? `<a href="tg://user?id=${me.id}">${whoBase}</a>` : whoBase;
+
+      const captionHtml =
+        `💳 <b>Подтверждение оплаты</b>\n`+
+        `👤 Пользователь: ${mention}${fullName ? ' ('+fullName+')' : ''}\n`+
+        (me?.id ? `🆔 ID: <code>${me.id}</code>\n` : ``)+
+        `🧑‍🎓 Фамилия: <b>${escapeHtml(state.lastname)}</b>\n`+
+        `📚 Категория: <b>${escapeHtml(state.category || '')}</b>\n`+
+        `🧾 Абонемент: <b>${escapeHtml(state.plan || '')}</b>\n`+
+        `💼 Вариант: <b>${escapeHtml(state.option || '')}</b>\n`+
+        `📎 Чек: прикреплён как документ`;
 
       sendBtn.disabled = true; const txt = sendBtn.textContent; sendBtn.textContent='Отправляем…';
 
       try{
-        await sendPhoto(state.file, caption); // только с фото
+        await sendDocument(state.file, captionHtml); // документ — стабильнее и допускает крупные файлы
         tg?.HapticFeedback?.impactOccurred?.('soft');
         safeAlert('✅ Отправлено! Спасибо!');
         toastMsg('Заявка отправлена ✅');
         // tg.close();
       }catch(e){
         console.error(e);
-        safeAlert('❌ Не удалось отправить. Попробуйте ещё раз.');
+        safeAlert('❌ Не удалось отправить. ' + (e?.message || 'Попробуйте ещё раз.'));
         toastMsg('Ошибка отправки ❌');
       }finally{
         sendBtn.textContent=txt; updateSendState();
       }
     });
+
+    function escapeHtml(s=''){
+      return s.replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+    }
 
     // ==== Init ====
     function init(){ renderStep1(); setStep(1); updateSummary(); }
