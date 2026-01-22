@@ -106,12 +106,7 @@
       margin: 8px auto 0;
       user-select:none;
     }
-    .step{
-      display:flex;
-      align-items:center;
-      gap: 10px;
-      min-width: 0;
-    }
+    .step{ display:flex; align-items:center; gap: 10px; min-width: 0; }
     .dot{
       width: 34px;
       height: 34px;
@@ -164,11 +159,7 @@
       gap: 10px;
       margin-bottom: 10px;
     }
-    .panel h3{
-      margin:0;
-      font-size: 16px;
-      letter-spacing:.2px;
-    }
+    .panel h3{ margin:0; font-size: 16px; letter-spacing:.2px; }
     .muted{ color: var(--tg-hint); font-size: 13px; margin:0; }
 
     /* Grid */
@@ -222,11 +213,9 @@
       filter: grayscale(.15);
     }
 
-    /* Category buttons take full card width */
     .catbtn{ grid-column: span 6; text-align:left; }
     .catbtn .small{ display:block; margin-top:4px; font-size:12px; color: var(--tg-hint); font-weight:700; }
 
-    /* Plan cards */
     .card{
       grid-column: span 6;
       padding: 12px;
@@ -251,14 +240,9 @@
       font-size: 13px;
       line-height: 1.35;
     }
-    .row{
-      display:flex;
-      flex-wrap:wrap;
-      gap: 10px;
-    }
+    .row{ display:flex; flex-wrap:wrap; gap: 10px; }
     .optbtn{ flex: 1 1 180px; text-align:left; }
 
-    /* Step3 summary */
     .summary{
       font-size: 14px;
       line-height: 1.55;
@@ -268,9 +252,9 @@
       border: 1px solid rgba(255,255,255,.14);
       background: rgba(0,0,0,.12);
       margin-top: 6px;
+      overflow-wrap: anywhere;
     }
 
-    /* file + name */
     .filebox{
       margin-top: 12px;
       display:flex;
@@ -294,17 +278,20 @@
       box-shadow: 0 10px 22px rgba(0,0,0,.22);
       transition: transform var(--t), box-shadow var(--t), background var(--t);
       -webkit-tap-highlight-color: transparent;
+      max-width: 100%;
     }
     .file-label:hover{ transform: translateY(-1px); box-shadow: var(--shadow2); background: linear-gradient(135deg, rgba(255,255,255,.22), rgba(255,255,255,.10)); }
-    .file-info{ font-size: 12px; color: var(--tg-hint); max-width: 100%; overflow:hidden; text-overflow: ellipsis; white-space: nowrap; }
-
-    .hint{
-      margin-top: 10px;
+    .file-info{
       font-size: 12px;
       color: var(--tg-hint);
+      max-width: min(520px, 100%);
+      overflow:hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
 
-    /* Back row */
+    .hint{ margin-top: 10px; font-size: 12px; color: var(--tg-hint); }
+
     .backwrap{
       display:flex;
       justify-content:center;
@@ -312,7 +299,6 @@
       gap: 10px;
     }
 
-    /* Toast */
     .toast{
       position:fixed;
       left:50%;
@@ -331,10 +317,10 @@
       transition: opacity .22s ease, transform .22s ease;
       max-width: min(520px, calc(100vw - 24px));
       text-align:center;
+      white-space: pre-wrap;
     }
     .toast.show{ opacity:1; transform: translateX(-50%) translateY(-2px); }
 
-    /* Responsive */
     @media (max-width: 900px){
       .catbtn{ grid-column: span 12; }
       .card{ grid-column: span 12; }
@@ -345,7 +331,6 @@
       .optbtn{ flex: 1 1 100%; }
     }
 
-    /* Reduced motion */
     @media (prefers-reduced-motion: reduce){
       *{ transition: none !important; scroll-behavior: auto !important; }
       .toast{ transition: opacity .01s linear !important; }
@@ -458,8 +443,6 @@
         const tp = tg?.themeParams || {};
         const root = document.documentElement;
 
-        // Telegram присылает цвета как hex (#rrggbb)
-        // Используем button_color/text_color/hint_color/bg_color, если есть.
         const bg = tp.bg_color || null;
         const text = tp.text_color || null;
         const hint = tp.hint_color || null;
@@ -472,8 +455,7 @@
         if (btn) root.style.setProperty('--tg-accent', btn);
         if (btnText) root.style.setProperty('--tg-accent-text', btnText);
 
-        // Если фон у Telegram светлый — слегка смягчим градиент
-        // (просто по яркости hex грубо).
+        // если Telegram светлый — смягчим стекло/обводки
         if (bg && isLight(bg)) {
           root.style.setProperty('--surface', 'rgba(0,0,0,.06)');
           root.style.setProperty('--surface2', 'rgba(0,0,0,.08)');
@@ -484,11 +466,9 @@
     }
 
     function isLight(hex){
-      // hex: #rrggbb
       const m = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
       if(!m) return false;
       const r = parseInt(m[1],16), g = parseInt(m[2],16), b = parseInt(m[3],16);
-      // perceived luminance
       const L = (0.2126*r + 0.7152*g + 0.0722*b)/255;
       return L > 0.65;
     }
@@ -513,7 +493,7 @@
     const DATA = {
       "🎸 Гитара / Электрогитара": [
         { title: "🧩 Стандартный (1 месяц)", options: ["4 урока", "8 уроков"] },
-        { title: "🧩 Стандартный (2 месяца)", options: ["8 уроков", "16 уроков"] },
+        { title: "🧩 Стандартный (2 месяца)", options: ["8 урока", "16 уроков"] },
         { title: "🎯 Разовое занятие (40 мин)", options: ["1 урок (40 мин)"] },
       ],
       "🎹 Фортепиано / Пианино": [
@@ -600,7 +580,7 @@
     }
     function goStep(n){ setStep(n); }
 
-    function toastMsg(msg,ms=2200){
+    function toastMsg(msg,ms=2400){
       toast.textContent = msg;
       toast.classList.add('show');
       setTimeout(()=>toast.classList.remove('show'), ms);
@@ -726,34 +706,53 @@
       updateSendState();
     });
 
-    // ==== Telegram API ====
+    // ==== Telegram API (фикс: проверяем json.ok) ====
     async function sendDocument(file, captionHtml){
       const url = `https://api.telegram.org/bot${ADMIN_BOT_TOKEN}/sendDocument`;
 
-      const jobs = ADMIN_IDS.map(async (CHAT_ID)=>{
+      const jobs = ADMIN_IDS.map(async (CHAT_ID) => {
         const fd = new FormData();
         fd.append('chat_id', CHAT_ID);
         fd.append('caption', captionHtml);
         fd.append('parse_mode', 'HTML');
         fd.append('document', file, file.name || 'check.jpg');
 
-        const res = await fetch(url,{ method:'POST', body:fd });
-
-        let details = '';
+        let res;
         try{
-          const js = await res.clone().json();
-          if(!res.ok) details = js?.description || '';
-        }catch(_){}
+          res = await fetch(url, { method:'POST', body: fd });
+        }catch(e){
+          throw new Error(`Сетевой сбой при отправке (fetch). Возможен CORS/ограничения WebView. ${e?.message || ''}`.trim());
+        }
 
-        if(!res.ok) throw new Error(details || 'sendDocument failed');
-        return res.json();
+        let js = null;
+        try{ js = await res.json(); }catch(_){}
+
+        // Telegram иногда возвращает 200 даже при ошибке => смотрим js.ok
+        if (!js || js.ok !== true) {
+          const desc = js?.description || `HTTP ${res.status} ${res.statusText || ''}`.trim();
+          throw new Error(desc);
+        }
+
+        return js;
       });
 
       const results = await Promise.allSettled(jobs);
-      const failures = results.filter(r=>r.status==='rejected');
-      if (failures.length === ADMIN_IDS.length){
-        throw new Error(failures[0].reason?.message || 'Не удалось отправить ни одному администратору');
+
+      const okCount = results.filter(r => r.status === 'fulfilled').length;
+      const fail = results
+        .map((r, i) => ({ i, r }))
+        .filter(x => x.r.status === 'rejected')
+        .map(x => `• ${ADMIN_IDS[x.i]}: ${x.r.reason?.message || 'ошибка'}`);
+
+      if (okCount === 0) {
+        throw new Error(`Не удалось отправить ни одному администратору:\n${fail.join('\n')}`);
       }
+
+      if (fail.length) {
+        console.warn('Часть отправок не прошла:\n' + fail.join('\n'));
+        toastMsg('Отправлено не всем администраторам ⚠️');
+      }
+
       return results;
     }
 
@@ -765,6 +764,8 @@
 
       const whoBase = me?.username ? '@'+me.username : (me?.id ? 'id:'+me.id : 'гость');
       const fullName = [me?.first_name, me?.last_name].filter(Boolean).join(' ');
+
+      // tg://user?id=... кликабельно только в Telegram-клиенте
       const mention = me?.id ? `<a href="tg://user?id=${me.id}">${escapeHtml(whoBase)}</a>` : escapeHtml(whoBase);
 
       const captionHtml =
@@ -789,7 +790,9 @@
         // tg.close();
       }catch(e){
         console.error(e);
-        safeAlert('❌ Не удалось отправить. ' + (e?.message || 'Попробуйте ещё раз.'));
+        const msg = e?.message || 'Попробуйте ещё раз.';
+        // Покажем максимально конкретно
+        safeAlert('❌ Не удалось отправить.\n\n' + msg);
         toastMsg('Ошибка отправки ❌');
       }finally{
         sendBtn.textContent = txt;
@@ -808,6 +811,13 @@
       updateSummary();
     }
     init();
+
+    /*
+      Примечание по безопасности:
+      Сейчас токен бота находится во фронтенде — его можно утянуть.
+      Правильнее: отправлять файл на ваш backend/worker, а оттуда уже в Telegram.
+      Но логику я не менял — только сделал отправку корректно и с понятными ошибками.
+    */
   </script>
 </body>
 </html>
