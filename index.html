@@ -3,139 +3,439 @@
 <head>
   <meta charset="UTF-8" />
   <title>Подтверждение оплаты</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
   <style>
     :root{
-      --bg1:#6a11cb; --bg2:#2575fc;
-      --glass: rgba(255,255,255,.12);
-      --line: rgba(255,255,255,.22);
-      --white:#fff; --text:#eef2ff;
-      --a1:#9b4dff; --a2:#6a11cb; --a3:#2575fc;
-      --btn: linear-gradient(135deg, var(--a1), var(--a2));
-      --btnH: linear-gradient(135deg, #b16eff, #7d2fff);
-      --panelR: 16px;
-      --trans: .22s ease;
-      --shadow: 0 10px 24px rgba(0,0,0,.28);
+      /* Telegram theme fallbacks (будут переопределены из tg.themeParams) */
+      --tg-bg: #0b1020;
+      --tg-text: #eef2ff;
+      --tg-hint: rgba(238,242,255,.72);
+      --tg-accent: #5b7cfa;
+      --tg-accent-text: #0b1020;
+
+      /* Brand / UI */
+      --g1: #6a11cb;
+      --g2: #2575fc;
+
+      --surface: rgba(255,255,255,.08);
+      --surface2: rgba(255,255,255,.12);
+      --stroke: rgba(255,255,255,.14);
+      --stroke2: rgba(255,255,255,.22);
+
+      --shadow1: 0 10px 28px rgba(0,0,0,.35);
+      --shadow2: 0 18px 50px rgba(0,0,0,.40);
+
+      --r12: 12px;
+      --r16: 16px;
+      --r20: 20px;
+
+      --t: .22s cubic-bezier(.2,.8,.2,1);
+
+      --container: 980px;
+      --pad: 16px;
     }
-    *{box-sizing:border-box}
-    html,body{margin:0}
+
+    *{ box-sizing:border-box; }
+    html,body{ margin:0; padding:0; }
     body{
-      font-family: Arial, Helvetica, sans-serif;
-      background: linear-gradient(135deg, var(--bg1), var(--bg2));
-      color: var(--white);
+      font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial, "Noto Sans", "Apple Color Emoji","Segoe UI Emoji";
+      color: var(--tg-text);
       min-height: 100vh;
-      padding: 16px;
-      text-align: center;
+      min-height: 100dvh;
+      padding:
+        calc(var(--pad) + env(safe-area-inset-top))
+        calc(var(--pad) + env(safe-area-inset-right))
+        calc(var(--pad) + env(safe-area-inset-bottom))
+        calc(var(--pad) + env(safe-area-inset-left));
+      background:
+        radial-gradient(1200px 800px at 10% -10%, rgba(37,117,252,.45), transparent 60%),
+        radial-gradient(1000px 700px at 110% 0%, rgba(106,17,203,.50), transparent 60%),
+        linear-gradient(135deg, var(--g1), var(--g2));
+      text-align:center;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
     }
-    h1{margin:6px 0 2px;font-size:26px;font-weight:900;letter-spacing:.3px;text-shadow:0 4px 14px rgba(0,0,0,.25)}
-    .sub{opacity:.9;font-size:13px;margin-bottom:8px}
+
+    /* Layout */
+    .wrap{
+      max-width: var(--container);
+      margin: 0 auto;
+      display: grid;
+      gap: 12px;
+    }
+
+    header{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap: 12px;
+      padding: 14px 14px 10px;
+      border-radius: var(--r20);
+      background: linear-gradient(135deg, rgba(255,255,255,.12), rgba(255,255,255,.06));
+      border: 1px solid var(--stroke);
+      box-shadow: var(--shadow1);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      text-align:left;
+    }
+
+    .titlebox{ display:grid; gap:6px; }
+    h1{
+      margin:0;
+      font-size: clamp(20px, 2.8vw, 28px);
+      font-weight: 900;
+      letter-spacing: .2px;
+      line-height: 1.1;
+      text-shadow: 0 10px 26px rgba(0,0,0,.22);
+    }
+    .sub{
+      margin:0;
+      font-size: clamp(12px, 1.6vw, 14px);
+      color: var(--tg-hint);
+      line-height: 1.35;
+    }
 
     /* Stepper */
-    .stepper{ display:flex;justify-content:center;gap:10px;margin:8px auto 6px;user-select:none }
-    .dot{ width:30px;height:30px;border-radius:50%; background:#ffffff1e;border:1px solid var(--line); display:grid;place-items:center;font-weight:800 }
-    .dot.active{background:linear-gradient(135deg,#ffffff40,#ffffff24);border-color:#ffffff66}
-    .dot.done{background:linear-gradient(135deg,#59ffa6,#29d17c);color:#173a30;border:none}
+    .stepper{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap: 10px;
+      margin: 8px auto 0;
+      user-select:none;
+    }
+    .step{
+      display:flex;
+      align-items:center;
+      gap: 10px;
+      min-width: 0;
+    }
+    .dot{
+      width: 34px;
+      height: 34px;
+      border-radius: 999px;
+      display:grid;
+      place-items:center;
+      font-weight: 900;
+      font-size: 13px;
+      color: rgba(255,255,255,.92);
+      background: rgba(255,255,255,.12);
+      border: 1px solid var(--stroke2);
+      box-shadow: 0 8px 20px rgba(0,0,0,.22);
+      transition: transform var(--t), background var(--t), border-color var(--t), color var(--t);
+    }
+    .dot.active{
+      background: linear-gradient(135deg, rgba(255,255,255,.24), rgba(255,255,255,.12));
+      border-color: rgba(255,255,255,.40);
+      transform: translateY(-1px);
+    }
+    .dot.done{
+      background: linear-gradient(135deg, rgba(89,255,166,.95), rgba(41,209,124,.95));
+      border-color: transparent;
+      color: #103225;
+      box-shadow: 0 12px 26px rgba(0,0,0,.25);
+    }
+    .bar{
+      width: 56px;
+      height: 2px;
+      border-radius: 99px;
+      background: rgba(255,255,255,.22);
+      border: 1px solid rgba(255,255,255,.08);
+    }
 
     /* Panels */
-    .panel{max-width:960px;margin:12px auto 0;background:var(--glass);border:1px solid var(--line);border-radius:var(--panelR);box-shadow:var(--shadow);padding:14px}
-
-    .grid{ display:grid; grid-template-columns: repeat(auto-fill, minmax(250px,1fr)); gap:12px; margin-top:8px }
-
-    .catbtn, .optbtn, .mainbtn, .backbtn, .namebtn{
-      display:block;width:100%; padding:12px;border-radius:14px;border:1px solid var(--line);
-      background: linear-gradient(135deg, #ffffff22, #ffffff11); color:#fff;font-weight:800;cursor:pointer;
-      box-shadow: var(--shadow); transition: transform var(--trans), background var(--trans), opacity var(--trans)
+    .panel{
+      text-align:left;
+      padding: 14px;
+      border-radius: var(--r20);
+      border: 1px solid var(--stroke);
+      background: linear-gradient(135deg, rgba(255,255,255,.10), rgba(255,255,255,.06));
+      box-shadow: var(--shadow1);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
     }
-    .catbtn:hover, .optbtn:hover, .backbtn:hover, .namebtn:hover{ transform: translateY(-2px); background: linear-gradient(135deg, #ffffff33, #ffffff18) }
 
-    .card{ text-align:left;padding:12px;border-radius:14px;border:1px solid var(--line); background: linear-gradient(135deg, #ffffff12, #ffffff0a); box-shadow:0 6px 16px rgba(0,0,0,.22); transition: transform var(--trans), box-shadow var(--trans) }
-    .card:hover{ transform: translateY(-2px); box-shadow:0 12px 28px rgba(0,0,0,.28) }
-    .card h3{margin:0 0 8px;font-size:18px;border-bottom:1px solid var(--line);padding-bottom:6px}
-    .card p{margin:6px 0;color:var(--text);font-size:14px}
+    .panelhead{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+    .panel h3{
+      margin:0;
+      font-size: 16px;
+      letter-spacing:.2px;
+    }
+    .muted{ color: var(--tg-hint); font-size: 13px; margin:0; }
 
-    .row{display:flex;flex-wrap:wrap;gap:10px;margin-top:10px}
-    .optbtn{flex:1 1 130px}
+    /* Grid */
+    .grid{
+      display:grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 12px;
+      margin-top: 6px;
+    }
 
-    .mainbtn{ background: var(--btn); border:none;margin-top:12px;font-size:15px }
-    .mainbtn:hover{ background: var(--btnH); transform: translateY(-1px) }
-    .mainbtn:disabled{ opacity:.6;transform:none;cursor:not-allowed;filter:grayscale(0.2) }
+    /* Buttons */
+    .btn{
+      appearance:none;
+      -webkit-tap-highlight-color: transparent;
+      border: 1px solid var(--stroke2);
+      background: linear-gradient(135deg, rgba(255,255,255,.16), rgba(255,255,255,.08));
+      color: rgba(255,255,255,.95);
+      border-radius: 16px;
+      padding: 12px 12px;
+      font-weight: 850;
+      cursor:pointer;
+      box-shadow: 0 10px 22px rgba(0,0,0,.22);
+      transition: transform var(--t), box-shadow var(--t), background var(--t), border-color var(--t), opacity var(--t);
+    }
+    .btn:hover{ transform: translateY(-2px); box-shadow: var(--shadow2); background: linear-gradient(135deg, rgba(255,255,255,.22), rgba(255,255,255,.10)); }
+    .btn:active{ transform: translateY(0px) scale(.99); }
+    .btn:focus-visible{
+      outline: 3px solid rgba(255,255,255,.22);
+      outline-offset: 2px;
+    }
 
-    .backwrap{display:flex;justify-content:center;margin-top:12px}
-    .backbtn{width:auto;padding:10px 16px}
+    .btn.primary{
+      border: none;
+      background: linear-gradient(135deg, var(--tg-accent), rgba(255,255,255,.14));
+      color: var(--tg-accent-text);
+      text-shadow: none;
+    }
+    .btn.primary:hover{ background: linear-gradient(135deg, rgba(255,255,255,.14), var(--tg-accent)); }
+
+    .btn.ghost{
+      background: rgba(255,255,255,.08);
+      border: 1px solid var(--stroke);
+      box-shadow: 0 8px 18px rgba(0,0,0,.18);
+    }
+
+    .btn:disabled{
+      opacity:.55;
+      cursor:not-allowed;
+      transform:none;
+      box-shadow: 0 8px 18px rgba(0,0,0,.18);
+      filter: grayscale(.15);
+    }
+
+    /* Category buttons take full card width */
+    .catbtn{ grid-column: span 6; text-align:left; }
+    .catbtn .small{ display:block; margin-top:4px; font-size:12px; color: var(--tg-hint); font-weight:700; }
+
+    /* Plan cards */
+    .card{
+      grid-column: span 6;
+      padding: 12px;
+      border-radius: 18px;
+      border: 1px solid var(--stroke);
+      background: linear-gradient(135deg, rgba(255,255,255,.10), rgba(255,255,255,.05));
+      box-shadow: 0 10px 22px rgba(0,0,0,.22);
+      transition: transform var(--t), box-shadow var(--t);
+    }
+    .card:hover{ transform: translateY(-2px); box-shadow: var(--shadow2); }
+    .card h4{
+      margin:0 0 8px;
+      font-size: 16px;
+      font-weight: 900;
+      letter-spacing:.2px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid rgba(255,255,255,.14);
+    }
+    .card p{
+      margin: 0 0 10px;
+      color: var(--tg-hint);
+      font-size: 13px;
+      line-height: 1.35;
+    }
+    .row{
+      display:flex;
+      flex-wrap:wrap;
+      gap: 10px;
+    }
+    .optbtn{ flex: 1 1 180px; text-align:left; }
+
+    /* Step3 summary */
+    .summary{
+      font-size: 14px;
+      line-height: 1.55;
+      color: rgba(255,255,255,.92);
+      padding: 10px 12px;
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,.14);
+      background: rgba(0,0,0,.12);
+      margin-top: 6px;
+    }
 
     /* file + name */
-    .filebox{margin-top:10px;display:flex;gap:8px;align-items:center;justify-content:center;flex-wrap:wrap}
-    .file-input{display:none}
-    .file-label{ display:inline-flex;align-items:center;gap:8px;padding:10px 12px;border-radius:12px;cursor:pointer; background:linear-gradient(135deg, #ffffff22, #ffffff11); border:1px solid var(--line); font-weight:800 }
-    .file-label:hover{transform:translateY(-1px);background:linear-gradient(135deg,#ffffff33,#ffffff18)}
-    .file-info{font-size:12px;opacity:.95}
-    .namebtn{width:auto;padding:10px 12px}
+    .filebox{
+      margin-top: 12px;
+      display:flex;
+      gap: 10px;
+      align-items:center;
+      justify-content:center;
+      flex-wrap:wrap;
+      text-align:center;
+    }
+    .file-input{ display:none; }
+    .file-label{
+      display:inline-flex;
+      align-items:center;
+      gap: 8px;
+      padding: 10px 12px;
+      border-radius: 14px;
+      cursor:pointer;
+      border: 1px solid var(--stroke2);
+      background: linear-gradient(135deg, rgba(255,255,255,.16), rgba(255,255,255,.08));
+      font-weight: 900;
+      box-shadow: 0 10px 22px rgba(0,0,0,.22);
+      transition: transform var(--t), box-shadow var(--t), background var(--t);
+      -webkit-tap-highlight-color: transparent;
+    }
+    .file-label:hover{ transform: translateY(-1px); box-shadow: var(--shadow2); background: linear-gradient(135deg, rgba(255,255,255,.22), rgba(255,255,255,.10)); }
+    .file-info{ font-size: 12px; color: var(--tg-hint); max-width: 100%; overflow:hidden; text-overflow: ellipsis; white-space: nowrap; }
 
-    /* hint */
-    .hint{margin-top:8px;font-size:12px;opacity:.9}
+    .hint{
+      margin-top: 10px;
+      font-size: 12px;
+      color: var(--tg-hint);
+    }
 
-    /* toast */
-    .toast{ position:fixed;left:50%;bottom:16px;transform:translateX(-50%); background:rgba(0,0,0,.62);color:#fff;padding:10px 14px;border-radius:12px;border:1px solid rgba(255,255,255,.15); backdrop-filter:blur(6px);box-shadow:0 8px 20px rgba(0,0,0,.35);opacity:0;pointer-events:none;transition:opacity .25s }
-    .toast.show{opacity:1}
+    /* Back row */
+    .backwrap{
+      display:flex;
+      justify-content:center;
+      margin-top: 12px;
+      gap: 10px;
+    }
 
-    @media (max-width:520px){ .grid{grid-template-columns:1fr} }
+    /* Toast */
+    .toast{
+      position:fixed;
+      left:50%;
+      bottom: calc(14px + env(safe-area-inset-bottom));
+      transform:translateX(-50%);
+      background: rgba(0,0,0,.66);
+      color:#fff;
+      padding: 10px 14px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,.14);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      box-shadow: 0 14px 34px rgba(0,0,0,.45);
+      opacity:0;
+      pointer-events:none;
+      transition: opacity .22s ease, transform .22s ease;
+      max-width: min(520px, calc(100vw - 24px));
+      text-align:center;
+    }
+    .toast.show{ opacity:1; transform: translateX(-50%) translateY(-2px); }
+
+    /* Responsive */
+    @media (max-width: 900px){
+      .catbtn{ grid-column: span 12; }
+      .card{ grid-column: span 12; }
+    }
+    @media (max-width: 520px){
+      header{ padding: 12px; }
+      .bar{ width: 34px; }
+      .optbtn{ flex: 1 1 100%; }
+    }
+
+    /* Reduced motion */
+    @media (prefers-reduced-motion: reduce){
+      *{ transition: none !important; scroll-behavior: auto !important; }
+      .toast{ transition: opacity .01s linear !important; }
+    }
   </style>
 </head>
+
 <body>
-  <h1>🎸 Подтверждение оплаты</h1>
-  <div class="sub">Выберите направление → абонемент → прикрепите фото/файл чека → укажите фамилию → подтвердите</div>
+  <div class="wrap">
+    <header>
+      <div class="titlebox">
+        <h1>Подтверждение оплаты</h1>
+        <p class="sub">Выберите направление → абонемент → прикрепите чек → укажите фамилию → отправьте подтверждение</p>
+      </div>
+    </header>
 
-  <div class="stepper" id="stepper">
-    <div class="dot active" data-step="1">1</div>
-    <div class="dot" data-step="2">2</div>
-    <div class="dot" data-step="3">3</div>
-  </div>
-
-  <!-- ШАГ 1: Направление -->
-  <div id="step1" class="panel">
-    <div class="grid" id="categories"></div>
-  </div>
-
-  <!-- ШАГ 2: Абонемент -->
-  <div id="step2" class="panel" style="display:none">
-    <h3 id="chosenCategory" style="margin:0 0 8px"></h3>
-    <div id="plans" class="grid"></div>
-    <div class="backwrap"><button class="backbtn" type="button" onclick="goStep(1)">← Назад</button></div>
-  </div>
-
-  <!-- ШАГ 3: Чек + отправка -->
-  <div id="step3" class="panel" style="display:none">
-    <h3 style="margin:0 0 8px">Подтверждение</h3>
-    <div id="summary" style="font-size:14px;opacity:.95"></div>
-
-    <div class="filebox">
-      <input type="file" id="receipt" class="file-input" accept="image/*,.pdf,.heic,.heif,.png,.jpg,.jpeg,.webp">
-      <label class="file-label" for="receipt">📎 Прикрепить чек</label>
-      <span id="fileInfo" class="file-info">файл не выбран</span>
-      <!-- Кнопка ввода фамилии показывается после прикрепления чека -->
-      <button id="lastnameBtn" class="namebtn" type="button" style="display:none">📝 Фамилия ученика(цы)</button>
+    <div class="stepper" id="stepper" aria-label="Шаги оформления">
+      <div class="step"><div class="dot active" data-step="1">1</div></div>
+      <div class="bar" aria-hidden="true"></div>
+      <div class="step"><div class="dot" data-step="2">2</div></div>
+      <div class="bar" aria-hidden="true"></div>
+      <div class="step"><div class="dot" data-step="3">3</div></div>
     </div>
 
-    <div id="hint" class="hint">Чтобы подтвердить, прикрепите чек и укажите фамилию ученика(цы).</div>
+    <!-- ШАГ 1: Направление -->
+    <div id="step1" class="panel">
+      <div class="panelhead">
+        <div>
+          <h3>Шаг 1 — Направление</h3>
+          <p class="muted">Выберите категорию обучения</p>
+        </div>
+      </div>
+      <div class="grid" id="categories"></div>
+    </div>
 
-    <button id="sendBtn" class="mainbtn" disabled>✅ Отправить подтверждение</button>
-    <div class="backwrap"><button class="backbtn" type="button" onclick="goStep(2)">← Назад</button></div>
+    <!-- ШАГ 2: Абонемент -->
+    <div id="step2" class="panel" style="display:none">
+      <div class="panelhead">
+        <div>
+          <h3 id="chosenCategory" style="margin:0 0 4px"></h3>
+          <p class="muted">Выберите абонемент и вариант</p>
+        </div>
+      </div>
+
+      <div id="plans" class="grid"></div>
+
+      <div class="backwrap">
+        <button class="btn ghost" type="button" onclick="goStep(1)">← Назад</button>
+      </div>
+    </div>
+
+    <!-- ШАГ 3: Чек + отправка -->
+    <div id="step3" class="panel" style="display:none">
+      <div class="panelhead">
+        <div>
+          <h3>Шаг 3 — Подтверждение</h3>
+          <p class="muted">Прикрепите чек и укажите фамилию</p>
+        </div>
+      </div>
+
+      <div id="summary" class="summary"></div>
+
+      <div class="filebox">
+        <input type="file" id="receipt" class="file-input" accept="image/*,.pdf,.heic,.heif,.png,.jpg,.jpeg,.webp">
+        <label class="file-label" for="receipt">📎 Прикрепить чек</label>
+        <span id="fileInfo" class="file-info">файл не выбран</span>
+        <button id="lastnameBtn" class="btn ghost" type="button" style="display:none">📝 Фамилия ученика(цы)</button>
+      </div>
+
+      <div id="hint" class="hint">Чтобы подтвердить, прикрепите чек и укажите фамилию ученика(цы).</div>
+
+      <button id="sendBtn" class="btn primary" style="width:100%;margin-top:12px" disabled>✅ Отправить подтверждение</button>
+
+      <div class="backwrap">
+        <button class="btn ghost" type="button" onclick="goStep(2)">← Назад</button>
+      </div>
+    </div>
+
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
   </div>
-
-  <div id="toast" class="toast"></div>
 
   <script>
     // ==== Настройки ====
     const ADMIN_BOT_TOKEN = '7598736914:AAF1EK5D_g0gjflP7bKdtSgz8OyNz1q59PU';
-    // Отправляем сразу нескольким администраторам
     const ADMIN_IDS = ['725158536', '5056461242']; // + @Yuliya2821
 
     // ==== Telegram WebApp и проверка среды ====
     const tg = window.Telegram?.WebApp;
     tg?.expand?.(); tg?.ready?.();
 
-    // true, если реально запущено как WebApp из бота и есть initData/user
     const IS_TG_WEBAPP = !!(tg && (tg.initData || tg.initDataUnsafe?.user?.id));
 
     if (!IS_TG_WEBAPP) {
@@ -152,10 +452,54 @@
       throw new Error('Not a Telegram WebApp context');
     }
 
+    // ==== Подстройка под тему Telegram ====
+    function applyTelegramTheme(){
+      try{
+        const tp = tg?.themeParams || {};
+        const root = document.documentElement;
+
+        // Telegram присылает цвета как hex (#rrggbb)
+        // Используем button_color/text_color/hint_color/bg_color, если есть.
+        const bg = tp.bg_color || null;
+        const text = tp.text_color || null;
+        const hint = tp.hint_color || null;
+        const btn = tp.button_color || null;
+        const btnText = tp.button_text_color || null;
+
+        if (bg) root.style.setProperty('--tg-bg', bg);
+        if (text) root.style.setProperty('--tg-text', text);
+        if (hint) root.style.setProperty('--tg-hint', hint);
+        if (btn) root.style.setProperty('--tg-accent', btn);
+        if (btnText) root.style.setProperty('--tg-accent-text', btnText);
+
+        // Если фон у Telegram светлый — слегка смягчим градиент
+        // (просто по яркости hex грубо).
+        if (bg && isLight(bg)) {
+          root.style.setProperty('--surface', 'rgba(0,0,0,.06)');
+          root.style.setProperty('--surface2', 'rgba(0,0,0,.08)');
+          root.style.setProperty('--stroke', 'rgba(0,0,0,.10)');
+          root.style.setProperty('--stroke2', 'rgba(0,0,0,.14)');
+        }
+      }catch(_){}
+    }
+
+    function isLight(hex){
+      // hex: #rrggbb
+      const m = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+      if(!m) return false;
+      const r = parseInt(m[1],16), g = parseInt(m[2],16), b = parseInt(m[3],16);
+      // perceived luminance
+      const L = (0.2126*r + 0.7152*g + 0.0722*b)/255;
+      return L > 0.65;
+    }
+
+    applyTelegramTheme();
+    tg?.onEvent?.('themeChanged', applyTelegramTheme);
+
     // Пользователь из Telegram initData
     const me = tg?.initDataUnsafe?.user || null;
 
-    // Безопасный алерт (фолбэк на window.alert)
+    // Безопасный алерт
     function safeAlert(msg){
       if (tg?.showAlert) {
         try { tg.showAlert(msg); }
@@ -166,7 +510,6 @@
     }
 
     // ==== Данные (направления/абонементы) ====
-    // Поддержка необязательного поля desc у планов
     const DATA = {
       "🎸 Гитара / Электрогитара": [
         { title: "🧩 Стандартный (1 месяц)", options: ["4 урока", "8 уроков"] },
@@ -181,8 +524,6 @@
         { title: "Стандартный (1 месяц)", options: ["4 занятия (40 мин)", "8 занятий (40 мин)"] },
         { title: "Стандартный (2 месяца)", options: ["8 занятий (40 мин)", "16 занятий (40 мин)"] }
       ],
-
-      // 🇬🇧 Английский язык (по картинке)
       "🇬🇧 Английский язык": [
         {
           title: "🆕 Стандартный (1 месяц)",
@@ -208,17 +549,9 @@
           ]
         }
       ],
-
-      // --- Раздел наставничества ---
       "👩‍🏫 Наставничество с Никитой ": [
-        {
-          title: "Наставничество (1 месяц)",
-          options: ["2 790 ₽ за месяц"]
-        },
-        {
-          title: "Наставничество (2 месяца)",
-          options: ["4 990 ₽ за 2 месяца"]
-        }
+        { title: "Наставничество (1 месяц)", options: ["2 790 ₽ за месяц"] },
+        { title: "Наставничество (2 месяца)", options: ["4 990 ₽ за 2 месяца"] }
       ],
       "📘 Курс «Базовый минимум»": [
         {
@@ -232,7 +565,7 @@
       ]
     };
 
-    // ==== Состояние мастера ====
+    // ==== Состояние ====
     const state = { category:null, plan:null, option:null, file:null, lastname:null };
 
     // ==== DOM ====
@@ -240,13 +573,16 @@
     const step1 = document.getElementById('step1');
     const step2 = document.getElementById('step2');
     const step3 = document.getElementById('step3');
+
     const categories = document.getElementById('categories');
     const plansWrap = document.getElementById('plans');
     const chosenCategory = document.getElementById('chosenCategory');
+
     const fileInput = document.getElementById('receipt');
     const fileInfo = document.getElementById('fileInfo');
     const lastnameBtn = document.getElementById('lastnameBtn');
     const sendBtn = document.getElementById('sendBtn');
+
     const toast = document.getElementById('toast');
     const hint = document.getElementById('hint');
     const summaryEl = document.getElementById('summary');
@@ -263,9 +599,13 @@
       step3.style.display = n===3?'block':'none';
     }
     function goStep(n){ setStep(n); }
-    function toastMsg(msg,ms=2200){ toast.textContent=msg; toast.classList.add('show'); setTimeout(()=>toast.classList.remove('show'),ms); }
 
-    // Управление доступностью кнопки "Отправить"
+    function toastMsg(msg,ms=2200){
+      toast.textContent = msg;
+      toast.classList.add('show');
+      setTimeout(()=>toast.classList.remove('show'), ms);
+    }
+
     function updateSendState(){
       const hasFile = !!state.file;
       const hasLastname = !!(state.lastname && state.lastname.trim());
@@ -277,11 +617,11 @@
     function updateSummary(){
       const whoBase = me?.username ? '@'+me.username : (me?.id ? 'id:'+me.id : 'гость');
       const fullName = [me?.first_name, me?.last_name].filter(Boolean).join(' ');
-      summaryEl.innerHTML = `<div style="line-height:1.6">
-          👤 <b>${whoBase}${fullName ? ' ('+fullName+')' : ''}</b> ${state.lastname ? `(фамилия: ${state.lastname})` : ''}<br>
-          📚 <b>${state.category || '—'}</b><br>
-          🧾 <b>${state.plan || '—'}</b><br>
-          💼 <b>${state.option || '—'}</b>
+      summaryEl.innerHTML = `<div>
+          👤 <b>${escapeHtml(whoBase)}${fullName ? ' ('+escapeHtml(fullName)+')' : ''}</b> ${state.lastname ? `(фамилия: <b>${escapeHtml(state.lastname)}</b>)` : ''}<br>
+          📚 <b>${escapeHtml(state.category || '—')}</b><br>
+          🧾 <b>${escapeHtml(state.plan || '—')}</b><br>
+          💼 <b>${escapeHtml(state.option || '—')}</b>
         </div>`;
     }
 
@@ -290,8 +630,8 @@
       categories.innerHTML = '';
       Object.keys(DATA).forEach(cat=>{
         const btn = document.createElement('button');
-        btn.className = 'catbtn';
-        btn.textContent = cat;
+        btn.className = 'btn catbtn';
+        btn.innerHTML = `${escapeHtml(cat)}<span class="small">Нажмите, чтобы продолжить</span>`;
         btn.onclick = ()=>{
           state.category = cat; state.plan=null; state.option=null;
           renderStep2(); setStep(2);
@@ -303,19 +643,22 @@
     function renderStep2(){
       chosenCategory.textContent = `Направление: ${state.category}`;
       plansWrap.innerHTML = '';
-      const plans = DATA[state.category];
+      const plans = DATA[state.category] || [];
 
       plans.forEach((p)=>{
         const card = document.createElement('div');
         card.className = 'card';
 
-        const h = document.createElement('h3'); h.textContent = p.title; card.appendChild(h);
-        const desc = document.createElement('p'); desc.textContent = p.desc || 'Выберите вариант:'; card.appendChild(desc);
+        const h = document.createElement('h4'); h.textContent = p.title; card.appendChild(h);
+
+        const desc = document.createElement('p');
+        desc.textContent = p.desc || 'Выберите вариант:';
+        card.appendChild(desc);
 
         const row = document.createElement('div'); row.className = 'row';
-        p.options.forEach(opt=>{
+        (p.options || []).forEach(opt=>{
           const b = document.createElement('button');
-          b.className = 'optbtn';
+          b.className = 'btn optbtn';
           b.textContent = opt;
           b.onclick = ()=>{
             state.plan = p.title; state.option = opt;
@@ -330,12 +673,15 @@
     }
 
     function renderStep3(){
-      // НИЧЕГО НЕ СБРАСЫВАЕМ! Файл и фамилия сохраняются до отправки
       updateSummary();
 
-      // UI для файла/фамилии
-      if(state.file){ fileInfo.textContent = `загружен: ${state.file.name || 'файл'}`; lastnameBtn.style.display='inline-block'; }
-      else { fileInfo.textContent = 'файл не выбран'; lastnameBtn.style.display='none'; }
+      if(state.file){
+        fileInfo.textContent = `загружен: ${state.file.name || 'файл'}`;
+        lastnameBtn.style.display='inline-flex';
+      }else{
+        fileInfo.textContent = 'файл не выбран';
+        lastnameBtn.style.display='none';
+      }
 
       updateSendState();
     }
@@ -344,26 +690,36 @@
     fileInput.addEventListener('change', ()=>{
       const f = fileInput.files?.[0];
       if(!f){
-        fileInfo.textContent='файл не выбран'; state.file=null; lastnameBtn.style.display='none'; updateSendState(); return;
+        fileInfo.textContent='файл не выбран';
+        state.file=null;
+        lastnameBtn.style.display='none';
+        updateSendState();
+        return;
       }
-      // Telegram Bot API для документов до 50 МБ. Держим запас.
       const MAX_MB = 48;
       if(f.size > MAX_MB*1024*1024){
         fileInfo.textContent=`слишком большой файл (> ${MAX_MB}MB)`;
         toastMsg(`Файл > ${MAX_MB}MB`);
         fileInput.value='';
-        state.file=null; lastnameBtn.style.display='none'; updateSendState(); return;
+        state.file=null;
+        lastnameBtn.style.display='none';
+        updateSendState();
+        return;
       }
       fileInfo.textContent = `загружен: ${f.name || 'файл'}`;
       state.file = f;
-      lastnameBtn.style.display='inline-block';
+      lastnameBtn.style.display='inline-flex';
       updateSendState();
     });
 
     // ==== Ввод фамилии ====
     lastnameBtn.addEventListener('click', ()=>{
       const val = (window.prompt('Введите фамилию ученика(цы):', state.lastname || '') || '').trim();
-      if(!val){ toastMsg('Фамилия не указана'); updateSendState(); return; }
+      if(!val){
+        toastMsg('Фамилия не указана');
+        updateSendState();
+        return;
+      }
       state.lastname = val;
       toastMsg('Фамилия добавлена');
       updateSummary();
@@ -373,28 +729,29 @@
     // ==== Telegram API ====
     async function sendDocument(file, captionHtml){
       const url = `https://api.telegram.org/bot${ADMIN_BOT_TOKEN}/sendDocument`;
-      // Отправляем всем администраторам параллельно
+
       const jobs = ADMIN_IDS.map(async (CHAT_ID)=>{
         const fd = new FormData();
         fd.append('chat_id', CHAT_ID);
         fd.append('caption', captionHtml);
-        fd.append('parse_mode', 'HTML'); // чтобы кликался tg://user?id=...
+        fd.append('parse_mode', 'HTML');
         fd.append('document', file, file.name || 'check.jpg');
+
         const res = await fetch(url,{ method:'POST', body:fd });
-        // Пытаемся вытащить описание ошибки от Telegram
+
         let details = '';
         try{
           const js = await res.clone().json();
           if(!res.ok) details = js?.description || '';
         }catch(_){}
+
         if(!res.ok) throw new Error(details || 'sendDocument failed');
         return res.json();
       });
-      // Хотим, чтобы падение одного не ломало остальные: собираем результаты
+
       const results = await Promise.allSettled(jobs);
       const failures = results.filter(r=>r.status==='rejected');
       if (failures.length === ADMIN_IDS.length){
-        // упало везде — бросаем общую ошибку (первую по сообщению)
         throw new Error(failures[0].reason?.message || 'Не удалось отправить ни одному администратору');
       }
       return results;
@@ -403,18 +760,16 @@
     // ==== Confirm ====
     sendBtn.addEventListener('click', async ()=>{
       if(!state.category || !state.plan || !state.option){ toastMsg('Выберите направление и абонемент'); return; }
-
-      // ЖЁСТКОЕ УСЛОВИЕ: без чека и фамилии — отправка запрещена
       if(!state.file){ toastMsg('Прикрепите чек/файл'); return; }
       if(!state.lastname || !state.lastname.trim()){ toastMsg('Укажите фамилию ученика(цы)'); return; }
 
       const whoBase = me?.username ? '@'+me.username : (me?.id ? 'id:'+me.id : 'гость');
       const fullName = [me?.first_name, me?.last_name].filter(Boolean).join(' ');
-      const mention = me?.id ? `<a href="tg://user?id=${me.id}">${whoBase}</a>` : whoBase;
+      const mention = me?.id ? `<a href="tg://user?id=${me.id}">${escapeHtml(whoBase)}</a>` : escapeHtml(whoBase);
 
       const captionHtml =
         `💳 <b>Подтверждение оплаты</b>\n`+
-        `👤 Пользователь: ${mention}${fullName ? ' ('+fullName+')' : ''}\n`+
+        `👤 Пользователь: ${mention}${fullName ? ' ('+escapeHtml(fullName)+')' : ''}\n`+
         (me?.id ? `🆔 ID: <code>${me.id}</code>\n` : ``)+
         `🧑‍🎓 Фамилия: <b>${escapeHtml(state.lastname)}</b>\n`+
         `📚 Категория: <b>${escapeHtml(state.category || '')}</b>\n`+
@@ -422,10 +777,12 @@
         `💼 Вариант: <b>${escapeHtml(state.option || '')}</b>\n`+
         `📎 Чек: прикреплён как документ`;
 
-      sendBtn.disabled = true; const txt = sendBtn.textContent; sendBtn.textContent='Отправляем…';
+      sendBtn.disabled = true;
+      const txt = sendBtn.textContent;
+      sendBtn.textContent = 'Отправляем…';
 
       try{
-        await sendDocument(state.file, captionHtml); // документ — стабильнее и допускает крупные файлы
+        await sendDocument(state.file, captionHtml);
         tg?.HapticFeedback?.impactOccurred?.('soft');
         safeAlert('✅ Отправлено! Спасибо!');
         toastMsg('Заявка отправлена ✅');
@@ -435,18 +792,22 @@
         safeAlert('❌ Не удалось отправить. ' + (e?.message || 'Попробуйте ещё раз.'));
         toastMsg('Ошибка отправки ❌');
       }finally{
-        sendBtn.textContent=txt; updateSendState();
+        sendBtn.textContent = txt;
+        updateSendState();
       }
     });
 
     function escapeHtml(s=''){
-      return s.replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+      return String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
     }
 
     // ==== Init ====
-    function init(){ renderStep1(); setStep(1); updateSummary(); }
+    function init(){
+      renderStep1();
+      setStep(1);
+      updateSummary();
+    }
     init();
   </script>
 </body>
 </html>
-
